@@ -1,113 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Overdrive is a strategic racing board game with real cars, mod cards, and tactical gameplay.">
-  <title>Overdrive – Real Racing Rivals</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #111;
-      color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #222;
-      padding: 2rem;
-      text-align: center;
-    }
-    header h1 {
-      font-size: 2.5rem;
-      margin: 0;
-      color: #ff3c00;
-    }
-    header p {
-      font-size: 1.2rem;
-      color: #ccc;
-    }
-    section {
-      padding: 2rem;
-      max-width: 900px;
-      margin: auto;
-    }
-    img.preview {
-      max-width: 100%;
-      border-radius: 10px;
-      box-shadow: 0 0 12px rgba(255, 60, 0, 0.3);
-      margin: 1rem 0;
-    }
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1rem;
-    }
-    .feature {
-      background: #1b1b1b;
-      padding: 1rem;
-      border-left: 4px solid #ff3c00;
-      border-radius: 6px;
-    }
-    footer {
-      background: #181818;
-      color: #999;
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.9rem;
-    }
-    a {
-      color: #ff3c00;
-      text-decoration: none;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Overdrive – The Racing Strategy Game</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <header>
-    <h1>🏁 OVERDRIVE</h1>
-    <p>Real Cars. Real Mods. Real Strategy.</p>
+  <header class="hero">
+    <div class="overlay"></div>
+    <div class="hero-text">
+      <h1>OVERDRIVE</h1>
+      <p>Real Cars. Real Mods. Real Strategy.</p>
+    </div>
+    <video autoplay muted loop class="background-video">
+      <source src="assets/overdrive-hero.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
   </header>
 
-  <section>
-    <h2>About the Game</h2>
-    <p><strong>Overdrive</strong> is a competitive, deck-building racing board game that puts real-world performance cars and racing strategy in your hands. Race across iconic track layouts with upgradeable cars, tactical event cards, and a dynamic mod shop system. Outpace, outsmart, and outdrive your rivals!</p>
+  <main class="container">
 
-    <img src="images/car_card_sample.png" alt="Car Card Sample" class="preview">
+    <section class="card glass">
+      <h2>What is Overdrive?</h2>
+      <p>Overdrive is a customizable racing board game with real-world cars, track strategy, and mod upgrades. Compete across three iconic tracks in a persistent race weekend format.</p>
+    </section>
 
-    <h2>Core Features</h2>
-    <div class="features">
-      <div class="feature">
-        <h3>🚗 Real Cars</h3>
-        <p>Choose from accurate, stat-driven cars like the GT86, 370Z, Civic Type R and more — each with unique handling and abilities.</p>
-      </div>
-      <div class="feature">
-        <h3>🛠️ Mod System</h3>
-        <p>Upgrade with forced induction, suspension kits, ECU tunes, or track tires. Build a machine that suits your playstyle.</p>
-      </div>
-      <div class="feature">
-        <h3>🏎️ Strategic Racing</h3>
-        <p>Racing is turn-based — each decision matters. Use corners, draft zones, and wear tracking to outmaneuver opponents.</p>
-      </div>
-      <div class="feature">
-        <h3>📉 Persistent Campaign</h3>
-        <p>Race across 3 tracks, earn CR, repair damage, and build your deck between rounds in a race-weekend style campaign.</p>
-      </div>
-    </div>
-  </section>
+    <section class="card glass">
+      <h2>Core Features</h2>
+      <ul>
+        <li>🏎️ Deck-building meets racing</li>
+        <li>⚙️ Real car stats & tuning upgrades</li>
+        <li>🎮 Dynamic events, cornering tactics, wear management</li>
+        <li>🛠️ Mod shop between races</li>
+      </ul>
+    </section>
 
-  <section>
-    <h2>Download & Playtest</h2>
-    <p>We’re currently in open alpha! Grab a print-and-play test kit below:</p>
-    <ul>
-      <li><a href="#">📥 Download Starter Kit (PDF)</a></li>
-      <li><a href="#">🧾 Rulebook (PDF)</a></li>
-    </ul>
-  </section>
+    <section class="card glass">
+      <h2>Try the Game</h2>
+      <p>We’re in open playtest. Download the free print-and-play starter kit:</p>
+      <a class="btn" href="#">📥 Download Kit (PDF)</a>
+    </section>
+
+  </main>
 
   <footer>
-    <p>&copy; 2025 Overdrive Game | <a href="mailto:your@email.com">Contact</a> | <a href="https://github.com/yourusername/overdrive">GitHub Repo</a></p>
+    <p>&copy; 2025 Overdrive Game. Built with ❤️ on GitHub Pages. Contact: your@email.com</p>
   </footer>
 
 </body>
