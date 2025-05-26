@@ -20,8 +20,10 @@ h1, h2 {
 }
 
 .hero {
+  background-image: url('assets/hero-bg.jpg');
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   height: 100vh;
   display: flex;
   align-items: center;
@@ -80,9 +82,14 @@ h1, h2 {
 }
 
 .car-card img {
-  width: 300px;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
   border-radius: 12px;
   transition: transform 0.3s;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
 }
 
 .car-card img:hover {
