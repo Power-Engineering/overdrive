@@ -1,91 +1,128 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OVERDRIVE – Deck-Building Racing Game</title>
-  <link rel="stylesheet" href="assets/styles.css" />
-</head>
-<body>
+/* assets/styles.css */
 
-  <!-- Hero Section -->
-  <section class="hero" style="background-image: url('assets/hero-bg.jpg');">
-    <div class="overlay">
-      <h1>OVERDRIVE</h1>
-      <p>A competitive deck-building street racing board game</p>
-      <a href="#howtoplay" class="btn">Learn How to Play</a>
-    </div>
-  </section>
+body {
+  margin: 0;
+  font-family: 'Helvetica Neue', sans-serif;
+  background-color: #111;
+  color: #eee;
+  line-height: 1.6;
+}
 
-  <!-- About Section -->
-  <section id="about" class="two-column">
-    <div class="text">
-      <h2>What is Overdrive?</h2>
-      <p>Overdrive is a high-strategy racing board game where players pick real-world inspired cars, equip mods, and race across unique tracks.</p>
-    </div>
-    <div class="image">
-      <img src="assets/about-game.jpg" alt="About Overdrive Game" />
-    </div>
-  </section>
+section {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: auto;
+}
 
-  <!-- Car Cards Section -->
-  <section id="cars">
-    <h2>Choose Your Ride</h2>
-    <div class="card-grid">
-      <div class="car-card"><img src="assets/car-toyota-gt86.jpg" alt="Toyota GT86" /></div>
-      <div class="car-card"><img src="assets/car-nissan-370z.jpg" alt="Nissan 370Z" /></div>
-      <div class="car-card"><img src="assets/car-audi-tt.jpg" alt="Audi TT" /></div>
-    </div>
-  </section>
+h1, h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-  <!-- Mod Shop -->
-  <section id="modshop" class="two-column">
-    <div class="image">
-      <img src="assets/mod-shop.jpg" alt="Mod Shop" />
-    </div>
-    <div class="text">
-      <h2>Mod Your Car</h2>
-      <p>Equip your vehicle with cold air intakes, forced induction, sport suspension, and more. Some upgrades only work with certain engine types!</p>
-    </div>
-  </section>
+.hero {
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
 
-  <!-- Gameplay Mechanics -->
-  <section id="howtoplay">
-    <h2>How It Plays</h2>
-    <ul>
-      <li>Draft your car from a deck of real-world inspired vehicles</li>
-      <li>Earn currency and upgrade between races</li>
-      <li>Face random events, terrain changes, and head-to-head battles</li>
-    </ul>
-    <div class="tile-images">
-      <img src="assets/track-tile-1.jpg" alt="Track Tile" />
-      <img src="assets/event-cards.jpg" alt="Event Cards" />
-    </div>
-  </section>
+.overlay {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 40px;
+  text-align: center;
+  color: white;
+}
 
-  <!-- Print and Play -->
-  <section id="printplay">
-    <h2>Print & Play Version</h2>
-    <p>Try the game today with our free printable kit!</p>
-    <a href="assets/Overdrive_PrintAndPlay.pdf" class="btn">Download Now</a>
-  </section>
+.overlay h1 {
+  font-size: 4rem;
+  margin: 0;
+}
 
-  <!-- Trailer Section -->
-  <section id="trailer">
-    <h2>Watch the Trailer</h2>
-    <video autoplay loop muted playsinline>
-      <source src="assets/overdrive-trailer.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </section>
+.overlay p {
+  font-size: 1.2rem;
+  margin: 10px 0 30px;
+}
 
-  <!-- Footer -->
-  <footer>
-    <p>&copy; 2025 Overdrive. Designed by [Your Name]</p>
-    <p>
-      <a href="https://github.com/YOURUSERNAME">GitHub</a>
-    </p>
-  </footer>
+.btn {
+  background: #ff0055;
+  color: white;
+  padding: 12px 24px;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+}
 
-</body>
-</html>
+.two-column {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  align-items: center;
+  justify-content: center;
+}
+
+.two-column .text, .two-column .image {
+  flex: 1 1 300px;
+}
+
+.two-column .image img {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.card-grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.car-card img {
+  width: 300px;
+  border-radius: 12px;
+  transition: transform 0.3s;
+}
+
+.car-card img:hover {
+  transform: scale(1.05);
+}
+
+ul {
+  list-style: disc;
+  padding-left: 20px;
+  max-width: 800px;
+  margin: auto;
+  font-size: 1.1rem;
+}
+
+.tile-images {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.tile-images img {
+  width: 250px;
+  border-radius: 10px;
+}
+
+video {
+  display: block;
+  max-width: 800px;
+  width: 100%;
+  margin: 20px auto;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
+}
+
+footer {
+  background: #000;
+  color: #888;
+  text-align: center;
+  padding: 30px 10px;
+  font-size: 0.9rem;
+}
