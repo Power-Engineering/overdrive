@@ -1,98 +1,128 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Overdrive – A competitive deck-building street racing board game with real-world car strategy." />
-  <title>OVERDRIVE – Strategic Racing Board Game</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
-</head>
-<body>
+/* assets/styles.css */
 
-  <!-- Hero Banner -->
-  <header class="hero">
-    <div class="overlay">
-      <h1 class="title">OVERDRIVE</h1>
-      <p class="tagline">Deck-build. Tune up. Take the lead.</p>
-      <a href="#learn" class="btn">How It Works</a>
-    </div>
-  </header>
+body {
+  margin: 0;
+  font-family: 'Helvetica Neue', sans-serif;
+  background-color: #111;
+  color: #eee;
+  line-height: 1.6;
+}
 
-  <!-- About Section -->
-  <section id="about" class="section">
-    <div class="container two-column">
-      <div class="text">
-        <h2>What is Overdrive?</h2>
-        <p>Overdrive fuses real-world car culture with the tactical depth of a strategy card game. Choose iconic performance cars, install unique mods, and battle it out on modular tracks that change every race.</p>
-      </div>
-      <div class="image">
-        <img src="assets/about-game.jpg" alt="Game Components" />
-      </div>
-    </div>
-  </section>
+section {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: auto;
+}
 
-  <!-- Cars Section -->
-  <section id="cars" class="section dark">
-    <h2>Pick Your Ride</h2>
-    <div class="card-grid">
-      <div class="car-card"><img src="assets/car-toyota-gt86.jpg" alt="Toyota GT86" /></div>
-      <div class="car-card"><img src="assets/car-nissan-370z.jpg" alt="Nissan 370Z" /></div>
-      <div class="car-card"><img src="assets/car-audi-tt.jpg" alt="Audi TT RS" /></div>
-    </div>
-  </section>
+h1, h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-  <!-- Mod Shop Section -->
-  <section id="modshop" class="section">
-    <div class="container two-column">
-      <div class="image">
-        <img src="assets/mod-shop.jpg" alt="Mod Shop Scene" />
-      </div>
-      <div class="text">
-        <h2>Upgrade Everything</h2>
-        <p>Strategically build your deck with performance mods. Cold air intakes, coilovers, forced induction kits – each upgrade changes how your car handles the next track.</p>
-      </div>
-    </div>
-  </section>
+.hero {
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
 
-  <!-- How It Plays -->
-  <section id="learn" class="section dark">
-    <h2>How It Plays</h2>
-    <div class="container">
-      <ul class="features">
-        <li>🧩 Choose a real-world inspired sports car with unique stats</li>
-        <li>🛠 Upgrade your deck in the Mod Shop between races</li>
-        <li>🌧 Deal with weather events, tire wear, and track hazards</li>
-        <li>🏁 Compete on 3 modular tracks in a full championship mode</li>
-      </ul>
-      <div class="tile-images">
-        <img src="assets/track-tile-1.jpg" alt="Track Tile Example" />
-        <img src="assets/event-cards.jpg" alt="Event Cards" />
-      </div>
-    </div>
-  </section>
+.overlay {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 40px;
+  text-align: center;
+  color: white;
+}
 
-  <!-- Print and Play -->
-  <section id="printplay" class="section">
-    <h2>Download the Print & Play</h2>
-    <p>Try the full game for free by downloading our alpha playtest kit!</p>
-    <a class="btn" href="assets/Overdrive_PrintAndPlay.pdf">Download Kit</a>
-  </section>
+.overlay h1 {
+  font-size: 4rem;
+  margin: 0;
+}
 
-  <!-- Video Trailer -->
-  <section id="trailer" class="section dark">
-    <h2>Watch the Trailer</h2>
-    <video autoplay loop muted playsinline>
-      <source src="assets/overdrive-trailer.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </section>
+.overlay p {
+  font-size: 1.2rem;
+  margin: 10px 0 30px;
+}
 
-  <!-- Footer -->
-  <footer>
-    <p>&copy; 2025 Overdrive. Designed for racers and creators.</p>
-    <p><a href="https://github.com/YOURUSERNAME">GitHub</a> | <a href="mailto:your@email.com">Contact</a></p>
-  </footer>
+.btn {
+  background: #ff0055;
+  color: white;
+  padding: 12px 24px;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+}
 
-</body>
-</html>
+.two-column {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  align-items: center;
+  justify-content: center;
+}
+
+.two-column .text, .two-column .image {
+  flex: 1 1 300px;
+}
+
+.two-column .image img {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.card-grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.car-card img {
+  width: 300px;
+  border-radius: 12px;
+  transition: transform 0.3s;
+}
+
+.car-card img:hover {
+  transform: scale(1.05);
+}
+
+ul {
+  list-style: disc;
+  padding-left: 20px;
+  max-width: 800px;
+  margin: auto;
+  font-size: 1.1rem;
+}
+
+.tile-images {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.tile-images img {
+  width: 250px;
+  border-radius: 10px;
+}
+
+video {
+  display: block;
+  max-width: 800px;
+  width: 100%;
+  margin: 20px auto;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
+}
+
+footer {
+  background: #000;
+  color: #888;
+  text-align: center;
+  padding: 30px 10px;
+  font-size: 0.9rem;
+}
