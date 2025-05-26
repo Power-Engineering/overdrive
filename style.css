@@ -1,22 +1,15 @@
-/* assets/styles.css */
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
-  margin: 0;
-  font-family: 'Helvetica Neue', sans-serif;
-  background-color: #111;
-  color: #eee;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
-}
-
-section {
-  padding: 60px 20px;
-  max-width: 1200px;
-  margin: auto;
-}
-
-h1, h2 {
-  text-align: center;
-  margin-bottom: 20px;
+  background-color: #0f0f0f;
+  color: #e0e0e0;
 }
 
 /* Hero Section */
@@ -25,14 +18,11 @@ h1, h2 {
   background-image: url('assets/hero-bg.jpg');
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: white;
-  overflow: hidden;
 }
 
 .hero::before {
@@ -40,140 +30,148 @@ h1, h2 {
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.7) 100%);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 1;
 }
 
 .hero .overlay {
   position: relative;
   z-index: 2;
-  max-width: 90%;
+  color: #fff;
   padding: 2rem;
 }
 
 .hero h1 {
   font-size: 4rem;
   margin-bottom: 1rem;
-  letter-spacing: 2px;
   text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .hero p {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
+  opacity: 0.85;
   margin-bottom: 2rem;
-  opacity: 0.9;
 }
 
-.hero .btn {
+.btn {
   display: inline-block;
   background: #ff0050;
   color: white;
   padding: 0.75rem 1.5rem;
+  border-radius: 6px;
   text-decoration: none;
-  font-size: 1rem;
-  border-radius: 8px;
+  font-weight: bold;
   transition: background 0.3s ease;
 }
 
-.hero .btn:hover {
+.btn:hover {
   background: #e60047;
 }
 
+/* Section Styles */
+section {
+  padding: 4rem 2rem;
+}
 
-.overlay {
-  background: rgba(0, 0, 0, 0.5);
-  padding: 40px;
+h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
   text-align: center;
-  color: white;
+  color: #fff;
 }
 
-.overlay h1 {
-  font-size: 4rem;
-  margin: 0;
-}
-
-.overlay p {
-  font-size: 1.2rem;
-  margin: 10px 0 30px;
-}
-
-.btn {
-  background: #ff0055;
-  color: white;
-  padding: 12px 24px;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: bold;
-}
-
+/* Two Column Layout */
 .two-column {
   display: flex;
   flex-wrap: wrap;
-  gap: 40px;
   align-items: center;
   justify-content: center;
+  gap: 3rem;
+  max-width: 1200px;
+  margin: auto;
 }
 
-.two-column .text, .two-column .image {
-  flex: 1 1 300px;
+.two-column .text {
+  flex: 1;
+  min-width: 280px;
 }
 
-.two-column .image img {
+.two-column .image {
+  flex: 1;
+  min-width: 280px;
+}
+
+.two-column img {
   width: 100%;
   border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 
+/* Card Grid */
 .card-grid {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
 .car-card img {
-  width: 300px;
-  border-radius: 12px;
-  transition: transform 0.3s;
+  width: 280px;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
 }
 
-.car-card img:hover {
-  transform: scale(1.05);
-}
-
-ul {
+/* How to Play */
+#howtoplay ul {
   list-style: disc;
-  padding-left: 20px;
+  padding-left: 2rem;
   max-width: 800px;
   margin: auto;
-  font-size: 1.1rem;
+  margin-bottom: 2rem;
 }
 
 .tile-images {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
   justify-content: center;
-  margin-top: 20px;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .tile-images img {
-  width: 250px;
+  width: 200px;
   border-radius: 10px;
 }
 
-video {
-  display: block;
-  max-width: 800px;
-  width: 100%;
-  margin: 20px auto;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
+/* Video Trailer */
+#trailer {
+  text-align: center;
+  background-color: #1a1a1a;
+  padding: 4rem 2rem;
 }
 
+#trailer video {
+  width: 90%;
+  max-width: 800px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* Footer */
 footer {
-  background: #000;
-  color: #888;
+  background-color: #111;
+  color: #777;
   text-align: center;
-  padding: 30px 10px;
+  padding: 2rem;
   font-size: 0.9rem;
+}
+
+footer a {
+  color: #ff0050;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
 }
