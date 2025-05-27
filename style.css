@@ -67,8 +67,15 @@ h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
 h2 { color: #ff0050; margin-bottom: 2.1rem; font-size: 2.3rem; text-align: center; }
 h3 { font-size: 1.18rem; color: #fff; font-family: 'Orbitron', sans-serif; }
 
+/* ----- CAR GRID (HORIZONTAL ROW on DESKTOP) ----- */
 .car-grid {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 2.6rem; margin-top: 2rem;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 2.6rem;
+  margin-top: 2rem;
+  overflow-x: auto;
+  width: 100%;
 }
 .car-card.glass {
   background: rgba(28,27,44,0.72);
@@ -80,12 +87,12 @@ h3 { font-size: 1.18rem; color: #fff; font-family: 'Orbitron', sans-serif; }
   transition: transform 0.22s, box-shadow 0.22s;
   backdrop-filter: blur(9px) saturate(1.11);
   flex: 0 0 320px;
-  /* Remove width: 100%; */
+  margin-bottom: 1.2rem;
 }
-
 .car-card.glass:hover { transform: translateY(-8px) scale(1.04); box-shadow: 0 16px 44px #ff00503a, 0 12px 40px #000c; }
 .car-card img { width: 100%; max-width: 245px; border-radius: 10px; margin-bottom: 1.2rem; box-shadow: 0 2px 15px #000b; }
 
+/* ----- VIDEO CARDS & SECTIONS ----- */
 .video-card.glass {
   position: relative; overflow: hidden; border-radius: 18px; margin: 1.5rem auto 2rem auto;
   box-shadow: 0 12px 56px #ff00502e, 0 4px 28px #000c; max-width: 690px;
@@ -137,6 +144,7 @@ footer a:hover { text-decoration: underline; }
 
 @media (max-width: 900px) {
   .car-grid, .gallery-flex, .modshop-flex, .hazard-flex { flex-direction: column; gap: 1.5rem; }
+  .car-card.glass { flex: 1 1 100%; max-width: 450px; margin: 0 auto 1.3rem auto; }
   .overlay.glass { padding: 1.8rem 0.8rem; }
   .section { padding: 1.3rem 0.4rem; }
   nav.navbar ul { gap: 0.7rem; }
