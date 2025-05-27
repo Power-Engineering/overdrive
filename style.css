@@ -65,7 +65,7 @@ h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
 
 .cars-bg-art {
   position: relative;
-  min-height: 640px;
+  min-height: 700px;
   width: 100vw;
   overflow: visible;
   background: transparent;
@@ -79,19 +79,22 @@ h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
   z-index: 0;
   position: absolute;
   left: 0; top: 0; width: 100vw; height: 100%;
-  min-height: 640px;
-  background: url('data:image/svg+xml;utf8,<svg width="1920" height="640" xmlns="http://www.w3.org/2000/svg"><ellipse cx="960" cy="540" rx="950" ry="120" fill="%2323222c" opacity="0.25"/><ellipse cx="960" cy="340" rx="780" ry="120" fill="%23191a22" opacity="0.12"/><ellipse cx="520" cy="240" rx="330" ry="90" fill="%23ff0050" opacity="0.11"/><ellipse cx="1420" cy="220" rx="300" ry="90" fill="%23f76b1c" opacity="0.12"/><path d="M0 530 Q480 590 960 540 T1920 530" stroke="%235c5c70" stroke-width="14" fill="none" opacity="0.13"/><path d="M0 420 Q480 480 960 420 T1920 420" stroke="%23fff" stroke-width="2.4" fill="none" opacity="0.08"/></svg>') center center / cover no-repeat;
+  min-height: 700px;
+  background: url('data:image/svg+xml;utf8,<svg width="1920" height="700" xmlns="http://www.w3.org/2000/svg"><ellipse cx="960" cy="570" rx="950" ry="120" fill="%2323222c" opacity="0.25"/><ellipse cx="960" cy="340" rx="790" ry="130" fill="%23191a22" opacity="0.12"/><ellipse cx="520" cy="260" rx="330" ry="110" fill="%23ff0050" opacity="0.13"/><ellipse cx="1420" cy="240" rx="300" ry="110" fill="%23f76b1c" opacity="0.12"/><path d="M0 610 Q480 670 960 600 T1920 610" stroke="%235c5c70" stroke-width="14" fill="none" opacity="0.13"/><path d="M0 520 Q480 560 960 530 T1920 530" stroke="%23fff" stroke-width="2.4" fill="none" opacity="0.07"/></svg>') center center / cover no-repeat;
 }
 .cars-full-row {
   width: 100vw;
   max-width: 100vw;
-  min-height: 600px;
+  min-height: 680px;
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+.car-grid-spacer {
+  height: 64px;
 }
 .cars-full-row h2 {
   color: #ff0050;
@@ -114,7 +117,7 @@ h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
 .car-card.glass {
   background: rgba(28,27,44,0.82);
   border-radius: 18px;
-  box-shadow: 0 0 0 0 #000, 0 0 22px 5px #ff0050bb, 0 8px 24px #000c;
+  box-shadow: 0 0 0 0 #000, 0 0 24px 5px #ff0050bb, 0 8px 24px #000c;
   padding: 2.4rem 1.3rem 1.7rem 1.3rem;
   min-width: 280px; max-width: 350px;
   text-align: center;
@@ -129,7 +132,7 @@ h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
 .car-card.glass:hover {
   transform: translateY(-8px) scale(1.07);
   border: 2.5px solid #ff0050cc;
-  box-shadow: 0 0 32px 10px #ff0050cc, 0 12px 40px #f76b1c55, 0 6px 28px #000b;
+  box-shadow: 0 0 34px 8px #ff0050cc, 0 10px 32px #f76b1c55, 0 6px 24px #000b;
 }
 .car-card img {
   width: 100%;
@@ -145,17 +148,18 @@ h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
 .car-card h3 { font-size: 1.18rem; letter-spacing: 1px; }
 
 @media (max-width: 1500px) {
-  .cars-full-row { min-height: 440px; }
-  .cars-bg-art, .cars-art-bg { min-height: 440px; }
+  .cars-full-row { min-height: 500px; }
+  .cars-bg-art, .cars-art-bg { min-height: 500px; }
 }
 @media (max-width: 1100px) {
-  .cars-full-row { min-height: 330px; }
-  .cars-bg-art, .cars-art-bg { min-height: 330px; }
+  .cars-full-row { min-height: 360px; }
+  .cars-bg-art, .cars-art-bg { min-height: 360px; }
 }
 @media (max-width: 900px) {
   .cars-art-bg { display: none; }
   .car-row-noscroll { gap: 1.1rem; padding: 0 8px;}
   .car-card.glass { min-width: 220px; max-width: 300px; flex: 0 0 200px; }
+  .car-grid-spacer { height: 20px; }
 }
 @media (max-width: 600px) {
   .cars-full-row { min-height: 210px; }
@@ -180,12 +184,15 @@ h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
   min-height: 570px;
   max-height: 900px;
 }
-.section-hero-overlay {
-  position: relative; z-index: 2;
+.section-hero-overlay,
+.section-hero-overlay.center-overlay {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%,-50%);
+  z-index: 2;
   width: 100%;
   max-width: 900px;
   padding: 5.2rem 2.9rem 2.7rem 2.9rem;
-  margin: 2.5rem auto 2rem auto;
   border-radius: 27px;
   background: rgba(28,24,38,0.67);
   box-shadow: 0 10px 38px #ff005023, 0 2px 22px #000c;
