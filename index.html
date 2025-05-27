@@ -9,83 +9,60 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
-  <!-- Hero Video Background -->
+  <!-- Hero Section -->
   <header class="hero">
-    <video autoplay muted loop playsinline class="hero-video">
-      <source src="assets/hero-bg.mp4" type="video/mp4" />
-    </video>
+    <div class="hero-bg"></div>
     <div class="overlay">
       <h1>OVERDRIVE</h1>
       <p>Deck-build. Tune up. Take the lead.</p>
-      <a href="#learn" class="btn">How It Works</a>
+      <a href="#cars" class="btn">Pick Your Car</a>
     </div>
   </header>
-
-  <!-- About Section -->
-  <section id="about" class="section">
-    <div class="two-column">
-      <div class="text">
-        <h2>What is Overdrive?</h2>
-        <p>Overdrive is a strategy deck-building street racing game. Choose real cars, mod them with performance upgrades, and outmaneuver rivals across dynamic race tracks. Intense. Customizable. Always replayable.</p>
-      </div>
-      <div class="image">
-        <img src="assets/about-overdrive.gif" alt="About Overdrive" />
-      </div>
-    </div>
-  </section>
 
   <!-- Cars Section -->
   <section id="cars" class="section">
     <h2>Pick Your Ride</h2>
-    <div class="card-grid">
-      <div class="car-card"><img src="assets/gt86-card.gif" alt="Toyota GT86"></div>
-      <div class="car-card"><img src="assets/370z-card.gif" alt="Nissan 370Z"></div>
-      <div class="car-card"><img src="assets/tt-card.gif" alt="Audi TT RS"></div>
+    <div class="car-grid">
+      <div class="car-card">
+        <img src="assets/car-toyota-gt86.jpg" alt="Toyota GT86" />
+        <h3>Toyota GT86</h3>
+      </div>
+      <div class="car-card">
+        <img src="assets/car-nissan-370z.jpg" alt="Nissan 370Z" />
+        <h3>Nissan 370Z</h3>
+      </div>
+      <div class="car-card">
+        <img src="assets/car-audi-tt.jpg" alt="Audi TT" />
+        <h3>Audi TT</h3>
+      </div>
     </div>
   </section>
 
-  <!-- Mod Shop Section -->
+  <!-- Modshop Section -->
   <section id="modshop" class="section">
-    <div class="two-column">
-      <div class="image">
-        <img src="assets/mod-shop.gif" alt="Mod Shop" />
-      </div>
-      <div class="text">
-        <h2>Upgrade Everything</h2>
-        <p>Use credits to equip your car with turbo kits, tires, brakes, and suspension upgrades. Your mods shape your race strategy. Build smart, drive fast.</p>
+    <h2>Mod Shop</h2>
+    <div class="modshop-flex">
+      <img src="assets/modshop.png" alt="Mod Shop" />
+      <div>
+        <p>Upgrade your car with performance mods: turbo kits, coilovers, brakes, and more. Fine-tune your build and dominate every track!</p>
       </div>
     </div>
   </section>
 
-  <!-- Gameplay Section -->
-  <section id="learn" class="section">
-    <h2>How It Plays</h2>
-    <ul>
-      <li>Draft your car and mod deck</li>
-      <li>Race across three strategic tracks</li>
-      <li>Manage wear, weather, and rival sabotage</li>
-      <li>Score the highest across the circuit to win</li>
-    </ul>
-    <div class="tile-images">
-      <img src="assets/track-hazard.gif" alt="Track and Hazard" />
-      <img src="assets/event-cards.gif" alt="Event Cards" />
+  <!-- Hazards Section -->
+  <section id="hazards" class="section">
+    <h2>Hazards & Events</h2>
+    <div class="hazard-flex">
+      <img src="assets/hazards.png" alt="Race Hazards and Events" />
+      <div>
+        <p>Dynamic hazards like rain, engine trouble, and obstacles can change the outcome of any race. Adapt and use your upgrades wisely to survive and win.</p>
+      </div>
     </div>
   </section>
 
-  <!-- Trailer -->
-  <section id="trailer" class="section">
-    <h2>Watch the Trailer</h2>
-    <video autoplay loop muted playsinline>
-      <source src="assets/overdrive-trailer.mp4" type="video/mp4" />
-    </video>
-  </section>
-
-  <!-- Footer -->
   <footer>
     <p>&copy; 2025 Overdrive. All rights reserved.</p>
     <p><a href="mailto:contact@overdrivegame.com">Contact Us</a></p>
   </footer>
-
 </body>
 </html>
