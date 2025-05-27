@@ -46,31 +46,23 @@
     </div>
   </header>
 
-  <!-- Cars Section with complex SVG background -->
+  <!-- Cars Section with SVG art left and right -->
   <section id="cars" class="section fade-in glass cars-bg-art">
-    <div class="cars-art-bg">
-      <svg width="100%" height="520" viewBox="0 0 1920 520" fill="none" preserveAspectRatio="none">
-        <defs>
-          <radialGradient id="japanbig1" cx="30%" cy="50%" r="80%" fx="40%" fy="60%">
-            <stop offset="0%" stop-color="#23232e" stop-opacity="0.9"/>
-            <stop offset="65%" stop-color="#292936" stop-opacity="0.85"/>
-            <stop offset="100%" stop-color="#1a1b22" stop-opacity="1"/>
-          </radialGradient>
-          <radialGradient id="japanbig2" cx="80%" cy="20%" r="70%" fx="75%" fy="25%">
-            <stop offset="0%" stop-color="#25243c" stop-opacity="0.3"/>
-            <stop offset="80%" stop-color="#212027" stop-opacity="0.05"/>
-            <stop offset="100%" stop-color="#191a22" stop-opacity="0"/>
-          </radialGradient>
-        </defs>
-        <!-- Layers of waves and clouds -->
-        <ellipse cx="340" cy="130" rx="430" ry="85" fill="url(#japanbig1)" opacity="0.32"/>
-        <ellipse cx="960" cy="350" rx="620" ry="140" fill="url(#japanbig2)" opacity="0.20"/>
-        <ellipse cx="1620" cy="200" rx="420" ry="110" fill="url(#japanbig1)" opacity="0.24"/>
-        <ellipse cx="400" cy="390" rx="260" ry="60" fill="#23232d" opacity="0.13"/>
-        <ellipse cx="1500" cy="390" rx="270" ry="70" fill="#212127" opacity="0.13"/>
-        <path d="M100 420Q480 300 940 480T1820 460" stroke="#262639" stroke-width="23" fill="none" opacity="0.13"/>
-        <path d="M230 330Q430 200 690 360T990 250" stroke="#23232d" stroke-width="14" fill="none" opacity="0.12"/>
-        <path d="M1280 350Q1420 280 1570 310T1780 240" stroke="#212127" stroke-width="11" fill="none" opacity="0.13"/>
+    <!-- Left and Right decorative SVGs -->
+    <div class="car-art-left">
+      <svg width="170" height="480" viewBox="0 0 170 480" fill="none" preserveAspectRatio="none">
+        <ellipse cx="60" cy="180" rx="140" ry="120" fill="#23232e" opacity="0.21"/>
+        <ellipse cx="60" cy="320" rx="110" ry="60" fill="#191a22" opacity="0.17"/>
+        <ellipse cx="100" cy="60" rx="60" ry="50" fill="#ff0050" opacity="0.10"/>
+        <ellipse cx="30" cy="400" rx="40" ry="80" fill="#f76b1c" opacity="0.07"/>
+      </svg>
+    </div>
+    <div class="car-art-right">
+      <svg width="170" height="480" viewBox="0 0 170 480" fill="none" preserveAspectRatio="none">
+        <ellipse cx="110" cy="220" rx="140" ry="110" fill="#23232e" opacity="0.21"/>
+        <ellipse cx="110" cy="380" rx="120" ry="70" fill="#191a22" opacity="0.14"/>
+        <ellipse cx="80" cy="60" rx="60" ry="45" fill="#ff0050" opacity="0.11"/>
+        <ellipse cx="140" cy="430" rx="35" ry="60" fill="#f76b1c" opacity="0.08"/>
       </svg>
     </div>
     <h2>Pick Your Ride</h2>
@@ -109,12 +101,12 @@
     </div>
   </section>
 
-  <!-- Hazards Section (tall, full width, glass card staggered to the right) -->
+  <!-- Hazards Section (tall, full width, glass card centered) -->
   <section id="hazards" class="section-hero hazard-hero fade-in">
     <video autoplay loop muted playsinline preload="auto" class="full-bg-video">
       <source src="assets/backandforth.mp4" type="video/mp4">
     </video>
-    <div class="section-hero-overlay glass hazard-stagger">
+    <div class="section-hero-overlay glass">
       <h2>Hazards & Events</h2>
       <h3>Race-changing hazards</h3>
       <p>Rain, engine trouble, and obstacles change every race. Adapt and upgrade to survive and win.</p>
