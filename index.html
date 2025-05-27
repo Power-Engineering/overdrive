@@ -18,14 +18,13 @@
       <li><a href="#modshop">Mod Shop</a></li>
       <li><a href="#hazards">Hazards</a></li>
       <li><a href="#showcase">Showcase</a></li>
-      <li><a href="#gallery">Gallery</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
 
   <!-- Hero Section with Showdown Video -->
   <header class="hero">
-    <video autoplay loop muted playsinline class="hero-video">
+    <video autoplay loop muted playsinline preload="auto" class="hero-video">
       <source src="assets/showdowncover.mp4" type="video/mp4">
     </video>
     <div class="overlay glass fade-in">
@@ -39,7 +38,7 @@
   <!-- Cars Section -->
   <section id="cars" class="section fade-in glass">
     <h2>Pick Your Ride</h2>
-    <div class="car-grid">
+    <div class="car-row-scroll">
       <div class="car-card glass">
         <img src="assets/car-toyota-gt86.jpg" alt="Toyota GT86" />
         <h3>Toyota GT86</h3>
@@ -64,7 +63,7 @@
     <h2>Mod Shop</h2>
     <div class="modshop-flex">
       <div class="video-card glass">
-        <video autoplay loop muted playsinline>
+        <video autoplay loop muted playsinline preload="auto">
           <source src="assets/neoncarupgraded86.mp4" type="video/mp4">
         </video>
         <div class="video-overlay">
@@ -82,18 +81,18 @@
       <img src="assets/hazards.png" alt="Race Hazards and Events" class="glass" />
       <div>
         <p>Dynamic hazards like rain, engine trouble, and obstacles can change the outcome of any race. Adapt and use your upgrades wisely to survive and win.</p>
-        <video autoplay loop muted playsinline style="width:240px; border-radius:14px; margin-top:1.2rem;">
+        <video autoplay loop muted playsinline preload="auto" style="width:240px; border-radius:14px; margin-top:1.2rem;">
           <source src="assets/backandforth.mp4" type="video/mp4">
         </video>
       </div>
     </div>
   </section>
 
-  <!-- Showcase Section with Neon Car Loop & Hero-bg Image -->
+  <!-- Showcase Section with Neon Car Loop -->
   <section id="showcase" class="section fade-in glass">
     <h2>Showcase</h2>
     <div class="video-card glass">
-      <video autoplay loop muted playsinline>
+      <video autoplay loop muted playsinline preload="auto">
         <source src="assets/neon-carloop.mp4" type="video/mp4">
       </video>
       <div class="video-overlay">
@@ -101,26 +100,15 @@
         <p>See the thrill of Overdrive in non-stop neon racing action.</p>
       </div>
     </div>
-    <div class="gallery-image glass" style="margin-top:2rem;">
-      <img src="assets/hero-bg.jpg" alt="Game Hero Art" style="width:100%; border-radius:14px; box-shadow: 0 8px 30px #ff005027;">
-      <div style="padding:0.7rem 1.1rem;">Poster art from the game world of Overdrive.</div>
-    </div>
   </section>
 
-  <!-- Gallery Section for Any Extra Images or Videos -->
-  <section id="gallery" class="section fade-in glass">
-    <h2>Gallery</h2>
-    <div class="gallery-flex">
-      <img src="assets/car-fordmustang.jpg" alt="Ford Mustang Closeup" class="glass" />
-      <img src="assets/hero-bg.jpg" alt="Overdrive Key Art" class="glass" />
-      <video autoplay loop muted playsinline style="max-width:320px; border-radius:14px;">
-        <source src="assets/neoncarupgraded86.mp4" type="video/mp4">
-      </video>
-    </div>
+  <!-- Poster Art Section (Bottom Visual) -->
+  <section class="section poster-art-section glass" style="padding:0;">
+    <img src="assets/hero-bg.jpg" alt="Overdrive Poster Art" class="poster-art-img" />
   </section>
 
   <!-- Call to Action -->
-  <section class="section cta-section fade-in glass">
+  <section class="section cta-section fade-in glass" style="margin-bottom:0;">
     <h2>Try Overdrive Free</h2>
     <a href="assets/Overdrive_PrintAndPlay.pdf" class="btn pulse big-btn">Download Print & Play Kit</a>
   </section>
