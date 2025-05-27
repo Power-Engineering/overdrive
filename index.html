@@ -46,8 +46,30 @@
     </div>
   </header>
 
-  <!-- Cars Section -->
-  <section id="cars" class="section fade-in glass">
+  <!-- Cars Section WITH Japanese-art SVG background and smooth wave divider -->
+  <section id="cars" class="section fade-in glass cars-bg-art">
+    <div class="cars-art-bg">
+      <!-- Stylized neutral SVG pattern -->
+      <svg width="100%" height="260" viewBox="0 0 1920 260" fill="none" preserveAspectRatio="none">
+        <defs>
+          <radialGradient id="japan1" cx="30%" cy="50%" r="80%" fx="36%" fy="55%" gradientTransform="rotate(-20)">
+            <stop offset="0%" stop-color="#212026" stop-opacity="0.9"/>
+            <stop offset="65%" stop-color="#28282f" stop-opacity="0.82"/>
+            <stop offset="100%" stop-color="#191A22" stop-opacity="1"/>
+          </radialGradient>
+          <linearGradient id="japan2" x1="0" y1="0" x2="1920" y2="180" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#191A22" stop-opacity="0.78"/>
+            <stop offset="1" stop-color="#27272e" stop-opacity="0.84"/>
+          </linearGradient>
+        </defs>
+        <!-- A few cartoonish neutral Japanese "cloud" waves -->
+        <ellipse cx="300" cy="70" rx="320" ry="60" fill="url(#japan1)" opacity="0.21"/>
+        <ellipse cx="800" cy="160" rx="330" ry="70" fill="url(#japan2)" opacity="0.18"/>
+        <ellipse cx="1580" cy="110" rx="300" ry="50" fill="url(#japan1)" opacity="0.19"/>
+        <path d="M200 160Q330 120 410 200T650 160" stroke="#23232d" stroke-width="10" fill="none" opacity="0.12"/>
+        <path d="M1200 200Q1350 140 1450 180T1600 140" stroke="#212127" stroke-width="10" fill="none" opacity="0.14"/>
+      </svg>
+    </div>
     <h2>Pick Your Ride</h2>
     <div class="car-row-noscroll">
       <div class="car-card glass">
@@ -85,7 +107,7 @@
     </div>
   </section>
 
-  <!-- Modshop Section (full width) -->
+  <!-- Modshop Section (tall full width) -->
   <section id="modshop" class="section-hero modshop-hero fade-in">
     <video autoplay loop muted playsinline preload="auto" class="full-bg-video">
       <source src="assets/neon-carloop.mp4" type="video/mp4">
@@ -108,7 +130,7 @@
     </div>
   </section>
 
-  <!-- Hazards Section (full width) -->
+  <!-- Hazards Section (tall full width) -->
   <section id="hazards" class="section-hero hazard-hero fade-in">
     <video autoplay loop muted playsinline preload="auto" class="full-bg-video">
       <source src="assets/backandforth.mp4" type="video/mp4">
