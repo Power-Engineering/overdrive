@@ -51,7 +51,7 @@ h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
 }
 .btn.pulse { animation: pulse-btn 1.8s infinite alternate; }
 .big-btn { font-size: 1.27rem; padding: 1.22rem 2.6rem; }
-@keyframes pulse-btn { to{ box-shadow:0 0 60px #ff0050, 0 0 10px #f76b1c; transform:scale(1.10);} }
+@keyframes pulse-btn { to{ box-shadow:0 0 30px #ff0050, 0 0 8px #f76b1c; transform:scale(1.06);} }
 .btn.pulse:hover { background: linear-gradient(90deg, #f76b1c 0%, #ff0050 100%);}
 .down-chevron {
   width: 32px; height: 32px; margin: 2.1rem auto 0;
@@ -72,7 +72,6 @@ h3 { font-size: 1.13rem; color: #fff; font-family: 'Orbitron', sans-serif; }
 .cars-bg-art {
   position: relative;
   z-index: 1;
-  padding-bottom: 1.5rem;
   min-height: 510px;
   overflow: visible;
 }
@@ -80,8 +79,8 @@ h3 { font-size: 1.13rem; color: #fff; font-family: 'Orbitron', sans-serif; }
   pointer-events: none;
   z-index: 0;
   position: absolute;
-  left: 0; top: 0; width: 100%; height: 580px;
-  background: url('data:image/svg+xml;utf8,<svg width="1920" height="580" xmlns="http://www.w3.org/2000/svg"><ellipse cx="960" cy="450" rx="960" ry="120" fill="%2323222c" opacity="0.18"/><ellipse cx="960" cy="300" rx="820" ry="130" fill="%23191a22" opacity="0.16"/><ellipse cx="480" cy="210" rx="300" ry="90" fill="%23ff0050" opacity="0.10"/><ellipse cx="1440" cy="210" rx="300" ry="90" fill="%23f76b1c" opacity="0.10"/><path d="M0 470 Q480 540 960 480 T1920 470" stroke="%235c5c70" stroke-width="20" fill="none" opacity="0.12"/><path d="M0 390 Q480 420 960 390 T1920 390" stroke="%23fff" stroke-width="3" fill="none" opacity="0.07"/></svg>') center center / cover no-repeat;
+  left: 0; top: 0; width: 100%; height: 600px;
+  background: url('data:image/svg+xml;utf8,<svg width="1920" height="600" xmlns="http://www.w3.org/2000/svg"><ellipse cx="960" cy="470" rx="950" ry="130" fill="%2323222c" opacity="0.22"/><ellipse cx="960" cy="330" rx="790" ry="110" fill="%23191a22" opacity="0.13"/><ellipse cx="480" cy="220" rx="300" ry="90" fill="%23ff0050" opacity="0.09"/><ellipse cx="1440" cy="220" rx="300" ry="90" fill="%23f76b1c" opacity="0.10"/><path d="M0 510 Q480 540 960 480 T1920 530" stroke="%235c5c70" stroke-width="15" fill="none" opacity="0.12"/><path d="M0 390 Q480 420 960 390 T1920 390" stroke="%23fff" stroke-width="2.4" fill="none" opacity="0.08"/></svg>') center center / cover no-repeat;
 }
 .car-row-noscroll {
   display: flex;
@@ -89,40 +88,50 @@ h3 { font-size: 1.13rem; color: #fff; font-family: 'Orbitron', sans-serif; }
   align-items: stretch;
   gap: 2.2rem;
   margin-bottom: 1.4rem;
-  flex-wrap: wrap;
-  overflow-x: visible;
+  flex-wrap: nowrap;
+  overflow-x: auto;
   z-index: 1;
   position: relative;
-  padding: 0;
+  padding: 0 2vw;
 }
 .car-card.glass {
   background: rgba(28,27,44,0.82);
   border-radius: 18px;
-  /* Huge full glow! */
-  box-shadow: 0 0 0 0 #000, 0 0 90px 24px #ff0050cc, 0 22px 60px #f76b1c55, 0 10px 38px #000b;
+  box-shadow: 0 0 0 0 #000, 0 0 42px 8px #ff0050bb, 0 8px 28px #000c;
   padding: 1.9rem 1.3rem 1.2rem 1.3rem;
-  min-width: 280px; max-width: 380px;
+  min-width: 270px; max-width: 360px;
   text-align: center;
-  transition: transform 0.24s, box-shadow 0.28s;
+  transition: transform 0.22s, box-shadow 0.27s;
   backdrop-filter: blur(13px) saturate(1.2);
-  flex: 1 1 280px;
+  flex: 0 0 290px;
   margin-bottom: 1.1rem;
-  border: 2.5px solid transparent;
+  border: 2px solid transparent;
   z-index: 10;
   position: relative;
 }
 .car-card.glass:hover {
-  transform: translateY(-14px) scale(1.14);
+  transform: translateY(-8px) scale(1.07);
   border: 2.5px solid #ff0050cc;
-  box-shadow: 0 0 150px 38px #ff0050ee, 0 26px 74px #f76b1c99, 0 12px 48px #000b;
+  box-shadow: 0 0 60px 14px #ff0050cc, 0 12px 40px #f76b1c55, 0 6px 28px #000b;
 }
-.car-card img { width: 100%; max-width: 320px; border-radius: 14px; margin-bottom: 1.2rem; box-shadow: 0 2px 14px #000b; }
-.car-card h3 { font-size: 1.25rem; letter-spacing: 1px; }
+.car-card img {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 14px;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 2px 14px #000b;
+  transition: filter 0.26s;
+}
+.car-card:hover img {
+  filter: brightness(1.09) saturate(1.06) contrast(1.04);
+}
+
+.car-card h3 { font-size: 1.18rem; letter-spacing: 1px; }
 
 @media (max-width: 1300px) {
-  .cars-art-bg { height: 460px; }
+  .cars-art-bg { height: 480px; }
   .car-row-noscroll { flex-wrap: nowrap; }
-  .car-card.glass { min-width: 220px; max-width: 330px; flex: 0 0 220px; }
+  .car-card.glass { min-width: 210px; max-width: 320px; flex: 0 0 220px; }
   .car-row-noscroll::-webkit-scrollbar {
     height: 10px;
     background: #241c2d;
@@ -207,7 +216,7 @@ footer a:hover { text-decoration: underline; }
 @media (max-width: 1300px) {
   .cars-art-bg { height: 410px; }
   .car-row-noscroll { flex-wrap: nowrap; }
-  .car-card.glass { min-width: 220px; max-width: 330px; flex: 0 0 220px; }
+  .car-card.glass { min-width: 200px; max-width: 320px; flex: 0 0 200px; }
   .car-row-noscroll::-webkit-scrollbar {
     height: 10px;
     background: #241c2d;
@@ -220,7 +229,7 @@ footer a:hover { text-decoration: underline; }
 }
 @media (max-width: 900px) {
   .cars-art-bg { display: none; }
-  .car-row-noscroll { padding-left: 0; padding-right: 0;}
+  .car-row-noscroll { flex-wrap: nowrap; padding: 0 8px;}
   .section-hero .full-bg-video { min-height: 170px; }
   .section-hero-overlay { max-width: 98vw; padding: 1.1rem 0.7rem; margin: 1.2rem auto; }
   .banner-cta { padding: 0.8rem 0.6rem; max-width: 98vw; }
