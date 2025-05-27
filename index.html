@@ -18,14 +18,15 @@
       <li><a href="#modshop">Mod Shop</a></li>
       <li><a href="#hazards">Hazards</a></li>
       <li><a href="#showcase">Showcase</a></li>
+      <li><a href="#gallery">Gallery</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
 
-  <!-- Hero Section with Video -->
+  <!-- Hero Section with Showdown Video -->
   <header class="hero">
     <video autoplay loop muted playsinline class="hero-video">
-      <source src="assets/neoncarupgraded86.mp4" type="video/mp4">
+      <source src="assets/showdowncover.mp4" type="video/mp4">
     </video>
     <div class="overlay glass fade-in">
       <h1>OVERDRIVE</h1>
@@ -51,46 +52,70 @@
         <img src="assets/car-audi-tt.jpg" alt="Audi TT" />
         <h3>Audi TT</h3>
       </div>
+      <div class="car-card glass">
+        <img src="assets/car-fordmustang.jpg" alt="Ford Mustang" />
+        <h3>Ford Mustang</h3>
+      </div>
     </div>
   </section>
 
-  <!-- Modshop Section with Video Card -->
+  <!-- Modshop Section with Neon Car Video and Modshop Image -->
   <section id="modshop" class="section fade-in glass">
     <h2>Mod Shop</h2>
-    <div class="video-card glass">
-      <video autoplay loop muted playsinline>
-        <source src="assets/backandforth.mp4" type="video/mp4">
-      </video>
-      <div class="video-overlay">
-        <p>Upgrade your car with turbo kits, coilovers, brakes, and more. Fine-tune your build and dominate every track!</p>
+    <div class="modshop-flex">
+      <div class="video-card glass">
+        <video autoplay loop muted playsinline>
+          <source src="assets/neoncarupgraded86.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay">
+          <p>Upgrade your car with turbo kits, coilovers, brakes, and more. Fine-tune your build and dominate every track!</p>
+        </div>
       </div>
+      <img src="assets/modshop.png" alt="Mod Shop" class="glass" style="max-width:320px; margin-left:1.5rem;">
     </div>
   </section>
 
   <!-- Hazards Section -->
   <section id="hazards" class="section fade-in glass">
     <h2>Hazards & Events</h2>
+    <div class="hazard-flex">
+      <img src="assets/hazards.png" alt="Race Hazards and Events" class="glass" />
+      <div>
+        <p>Dynamic hazards like rain, engine trouble, and obstacles can change the outcome of any race. Adapt and use your upgrades wisely to survive and win.</p>
+        <video autoplay loop muted playsinline style="width:240px; border-radius:14px; margin-top:1.2rem;">
+          <source src="assets/backandforth.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </section>
+
+  <!-- Showcase Section with Neon Car Loop & Hero-bg Image -->
+  <section id="showcase" class="section fade-in glass">
+    <h2>Showcase</h2>
     <div class="video-card glass">
       <video autoplay loop muted playsinline>
         <source src="assets/neon-carloop.mp4" type="video/mp4">
       </video>
       <div class="video-overlay">
-        <p>Dynamic hazards like rain, engine trouble, and obstacles can change the outcome of any race. Adapt and use your upgrades wisely to survive and win.</p>
+        <h3>Looping Action</h3>
+        <p>See the thrill of Overdrive in non-stop neon racing action.</p>
       </div>
+    </div>
+    <div class="gallery-image glass" style="margin-top:2rem;">
+      <img src="assets/hero-bg.jpg" alt="Game Hero Art" style="width:100%; border-radius:14px; box-shadow: 0 8px 30px #ff005027;">
+      <div style="padding:0.7rem 1.1rem;">Poster art from the game world of Overdrive.</div>
     </div>
   </section>
 
-  <!-- Showcase Section -->
-  <section id="showcase" class="section fade-in glass">
-    <h2>Showdown</h2>
-    <div class="video-card glass">
-      <video autoplay loop muted playsinline>
-        <source src="assets/showdowncover.mp4" type="video/mp4">
+  <!-- Gallery Section for Any Extra Images or Videos -->
+  <section id="gallery" class="section fade-in glass">
+    <h2>Gallery</h2>
+    <div class="gallery-flex">
+      <img src="assets/car-fordmustang.jpg" alt="Ford Mustang Closeup" class="glass" />
+      <img src="assets/hero-bg.jpg" alt="Overdrive Key Art" class="glass" />
+      <video autoplay loop muted playsinline style="max-width:320px; border-radius:14px;">
+        <source src="assets/neoncarupgraded86.mp4" type="video/mp4">
       </video>
-      <div class="video-overlay">
-        <h3>Head-to-Head Racing</h3>
-        <p>Experience intense head-to-head action in the Overdrive circuit.</p>
-      </div>
     </div>
   </section>
 
