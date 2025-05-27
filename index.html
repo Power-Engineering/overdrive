@@ -21,7 +21,7 @@
     </ul>
   </nav>
 
-  <!-- Hero Section with Showdown Video -->
+  <!-- Hero Section with Showdown Video and SVG Border -->
   <header class="hero">
     <video autoplay loop muted playsinline preload="auto" class="hero-video">
       <source src="assets/showdowncover.mp4" type="video/mp4">
@@ -31,6 +31,18 @@
       <p class="subtitle">Deck-build. Tune up. Take the lead.</p>
       <a href="#cars" class="btn pulse">Pick Your Car</a>
       <div class="down-chevron"></div>
+    </div>
+    <div class="hero-wave">
+      <svg width="100%" height="60" viewBox="0 0 1920 60" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0 60V20C480 80 1440 0 1920 60V0H0V60Z" fill="#181A22"/>
+        <path d="M0 60V40C480 110 1440 20 1920 60V0H0V60Z" fill="url(#gradient1)"/>
+        <defs>
+          <linearGradient id="gradient1" x1="0" y1="0" x2="1920" y2="60" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#ff0050" stop-opacity="0.18"/>
+            <stop offset="1" stop-color="#f76b1c" stop-opacity="0.17"/>
+          </linearGradient>
+        </defs>
+      </svg>
     </div>
   </header>
 
@@ -57,35 +69,32 @@
     </div>
   </section>
 
-  <!-- Modshop Section with Two Videos -->
-  <section id="modshop" class="section fade-in glass">
-    <h2>Mod Shop</h2>
-    <div class="modshop-flex">
-      <div class="video-double">
-        <video autoplay loop muted playsinline preload="auto" class="modshop-main-video">
-          <source src="assets/neoncarupgraded86.mp4" type="video/mp4">
-        </video>
-        <video autoplay loop muted playsinline preload="auto" class="modshop-loop-video">
-          <source src="assets/neon-carloop.mp4" type="video/mp4">
-        </video>
-      </div>
-      <img src="assets/modshop.png" alt="Mod Shop" class="glass" style="max-width:320px; margin-left:1.2rem;">
+  <!-- Modshop Section (single neon carloop video as BG, modshop image on top right, glass overlay) -->
+  <section id="modshop" class="section fade-in glass modshop-section">
+    <div class="modshop-video-bg">
+      <video autoplay loop muted playsinline preload="auto" class="modshop-bgvid">
+        <source src="assets/neon-carloop.mp4" type="video/mp4">
+      </video>
     </div>
-    <div class="video-overlay modshop-caption">
-      <p>Upgrade your car with turbo kits, coilovers, brakes, and more. The Mod Shop is where champions are made.</p>
+    <div class="modshop-content">
+      <div class="modshop-info glass">
+        <h2>Mod Shop</h2>
+        <p>Upgrade your car with turbo kits, coilovers, brakes, and more. The Mod Shop is where champions are made.</p>
+      </div>
+      <img src="assets/modshop.png" alt="Mod Shop" class="modshop-img glass" />
     </div>
   </section>
 
   <!-- Hazards Section -->
-  <section id="hazards" class="section fade-in glass">
+  <section id="hazards" class="section fade-in glass hazard-section">
     <h2>Hazards & Events</h2>
-    <div class="hazard-flex">
-      <img src="assets/hazards.png" alt="Race Hazards and Events" class="glass" />
-      <div>
-        <p>Dynamic hazards like rain, engine trouble, and obstacles can change the outcome of any race. Adapt and use your upgrades wisely to survive and win.</p>
-        <video autoplay loop muted playsinline preload="auto" style="width:240px; border-radius:14px; margin-top:1.2rem;">
-          <source src="assets/backandforth.mp4" type="video/mp4">
-        </video>
+    <div class="hazard-vid-wrap">
+      <video autoplay loop muted playsinline preload="auto" class="hazard-video-main">
+        <source src="assets/backandforth.mp4" type="video/mp4">
+      </video>
+      <div class="video-overlay hazard-overlay glass">
+        <h3>Race-changing hazards</h3>
+        <p>Rain, engine trouble, and obstacles change every race. Adapt and upgrade to survive and win.</p>
       </div>
     </div>
   </section>
