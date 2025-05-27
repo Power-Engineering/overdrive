@@ -72,11 +72,17 @@ h3 { font-size: 1.18rem; color: #fff; font-family: 'Orbitron', sans-serif; }
 }
 .car-card.glass {
   background: rgba(28,27,44,0.72);
-  border-radius: 15px; box-shadow: 0 10px 32px #ff005022, 0 6px 16px #000c;
-  padding: 1.6rem 1.2rem 1rem 1.2rem; max-width: 320px; width: 100%;
-  text-align: center; transition: transform 0.22s, box-shadow 0.22s;
+  border-radius: 15px;
+  box-shadow: 0 10px 32px #ff005022, 0 6px 16px #000c;
+  padding: 1.6rem 1.2rem 1rem 1.2rem;
+  max-width: 320px;
+  text-align: center;
+  transition: transform 0.22s, box-shadow 0.22s;
   backdrop-filter: blur(9px) saturate(1.11);
+  flex: 0 0 320px;
+  /* Remove width: 100%; */
 }
+
 .car-card.glass:hover { transform: translateY(-8px) scale(1.04); box-shadow: 0 16px 44px #ff00503a, 0 12px 40px #000c; }
 .car-card img { width: 100%; max-width: 245px; border-radius: 10px; margin-bottom: 1.2rem; box-shadow: 0 2px 15px #000b; }
 
