@@ -69,7 +69,6 @@ h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
 h2 { color: #ff0050; margin-bottom: 1.0rem; font-size: 2.01rem; text-align: center; }
 h3 { font-size: 1.13rem; color: #fff; font-family: 'Orbitron', sans-serif; }
 
-/* Car Section Artwork */
 .cars-bg-art {
   position: relative;
   z-index: 1;
@@ -77,15 +76,13 @@ h3 { font-size: 1.13rem; color: #fff; font-family: 'Orbitron', sans-serif; }
   min-height: 510px;
   overflow: visible;
 }
-.car-art-left, .car-art-right {
-  position: absolute;
-  top: 0; bottom: 0;
-  width: 170px; height: 100%;
-  z-index: 1;
+.cars-art-bg {
   pointer-events: none;
+  z-index: 0;
+  position: absolute;
+  left: 0; top: 0; width: 100%; height: 580px;
+  background: url('data:image/svg+xml;utf8,<svg width="1920" height="580" xmlns="http://www.w3.org/2000/svg"><ellipse cx="960" cy="450" rx="960" ry="120" fill="%2323222c" opacity="0.18"/><ellipse cx="960" cy="300" rx="820" ry="130" fill="%23191a22" opacity="0.16"/><ellipse cx="480" cy="210" rx="300" ry="90" fill="%23ff0050" opacity="0.10"/><ellipse cx="1440" cy="210" rx="300" ry="90" fill="%23f76b1c" opacity="0.10"/><path d="M0 470 Q480 540 960 480 T1920 470" stroke="%235c5c70" stroke-width="20" fill="none" opacity="0.12"/><path d="M0 390 Q480 420 960 390 T1920 390" stroke="%23fff" stroke-width="3" fill="none" opacity="0.07"/></svg>') center center / cover no-repeat;
 }
-.car-art-left { left: 0; }
-.car-art-right { right: 0; }
 .car-row-noscroll {
   display: flex;
   justify-content: center;
@@ -93,20 +90,20 @@ h3 { font-size: 1.13rem; color: #fff; font-family: 'Orbitron', sans-serif; }
   gap: 2.2rem;
   margin-bottom: 1.4rem;
   flex-wrap: wrap;
-  overflow-x: auto;
-  z-index: 2;
+  overflow-x: visible;
+  z-index: 1;
   position: relative;
-  padding-left: 180px;
-  padding-right: 180px;
+  padding: 0;
 }
 .car-card.glass {
   background: rgba(28,27,44,0.82);
   border-radius: 18px;
-  box-shadow: 0 0 0 0 #000, 0 10px 44px #ff00503a, 0 6px 16px #000c;
+  /* Huge full glow! */
+  box-shadow: 0 0 0 0 #000, 0 0 90px 24px #ff0050cc, 0 22px 60px #f76b1c55, 0 10px 38px #000b;
   padding: 1.9rem 1.3rem 1.2rem 1.3rem;
   min-width: 280px; max-width: 380px;
   text-align: center;
-  transition: transform 0.24s, box-shadow 0.24s;
+  transition: transform 0.24s, box-shadow 0.28s;
   backdrop-filter: blur(13px) saturate(1.2);
   flex: 1 1 280px;
   margin-bottom: 1.1rem;
@@ -115,16 +112,16 @@ h3 { font-size: 1.13rem; color: #fff; font-family: 'Orbitron', sans-serif; }
   position: relative;
 }
 .car-card.glass:hover {
-  transform: translateY(-12px) scale(1.10);
+  transform: translateY(-14px) scale(1.14);
   border: 2.5px solid #ff0050cc;
-  box-shadow: 0 0 80px 18px #ff0050cc, 0 20px 60px #f76b1c55, 0 10px 38px #000b;
+  box-shadow: 0 0 150px 38px #ff0050ee, 0 26px 74px #f76b1c99, 0 12px 48px #000b;
 }
 .car-card img { width: 100%; max-width: 320px; border-radius: 14px; margin-bottom: 1.2rem; box-shadow: 0 2px 14px #000b; }
 .car-card h3 { font-size: 1.25rem; letter-spacing: 1px; }
 
 @media (max-width: 1300px) {
-  .car-row-noscroll { flex-wrap: nowrap; padding-left: 60px; padding-right: 60px;}
-  .car-art-left, .car-art-right { width: 60px;}
+  .cars-art-bg { height: 460px; }
+  .car-row-noscroll { flex-wrap: nowrap; }
   .car-card.glass { min-width: 220px; max-width: 330px; flex: 0 0 220px; }
   .car-row-noscroll::-webkit-scrollbar {
     height: 10px;
@@ -208,13 +205,22 @@ footer a { color: #ff0050; text-decoration: none; }
 footer a:hover { text-decoration: underline; }
 
 @media (max-width: 1300px) {
-  .car-row-noscroll { flex-wrap: nowrap; padding-left: 60px; padding-right: 60px;}
-  .car-art-left, .car-art-right { width: 60px;}
+  .cars-art-bg { height: 410px; }
+  .car-row-noscroll { flex-wrap: nowrap; }
+  .car-card.glass { min-width: 220px; max-width: 330px; flex: 0 0 220px; }
+  .car-row-noscroll::-webkit-scrollbar {
+    height: 10px;
+    background: #241c2d;
+  }
+  .car-row-noscroll::-webkit-scrollbar-thumb {
+    background: #ff0050bb;
+    border-radius: 10px;
+  }
   .section-hero .full-bg-video { min-height: 330px; }
 }
 @media (max-width: 900px) {
+  .cars-art-bg { display: none; }
   .car-row-noscroll { padding-left: 0; padding-right: 0;}
-  .car-art-left, .car-art-right { display: none; }
   .section-hero .full-bg-video { min-height: 170px; }
   .section-hero-overlay { max-width: 98vw; padding: 1.1rem 0.7rem; margin: 1.2rem auto; }
   .banner-cta { padding: 0.8rem 0.6rem; max-width: 98vw; }
