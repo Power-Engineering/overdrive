@@ -21,7 +21,7 @@
     </ul>
   </nav>
 
-  <!-- Hero Section with Showdown Video and SVG Border -->
+  <!-- Hero Section -->
   <header class="hero">
     <video autoplay loop muted playsinline preload="auto" class="hero-video">
       <source src="assets/showdowncover.mp4" type="video/mp4">
@@ -46,28 +46,31 @@
     </div>
   </header>
 
-  <!-- Cars Section WITH Japanese-art SVG background, no deadspace -->
+  <!-- Cars Section with complex SVG background -->
   <section id="cars" class="section fade-in glass cars-bg-art">
     <div class="cars-art-bg">
-      <!-- Stylized neutral SVG pattern (covers 100% height and width) -->
-      <svg width="100%" height="420" viewBox="0 0 1920 420" fill="none" preserveAspectRatio="none">
+      <svg width="100%" height="520" viewBox="0 0 1920 520" fill="none" preserveAspectRatio="none">
         <defs>
-          <radialGradient id="japan1" cx="30%" cy="50%" r="80%" fx="36%" fy="55%" gradientTransform="rotate(-20)">
-            <stop offset="0%" stop-color="#212026" stop-opacity="0.9"/>
-            <stop offset="65%" stop-color="#28282f" stop-opacity="0.82"/>
-            <stop offset="100%" stop-color="#191A22" stop-opacity="1"/>
+          <radialGradient id="japanbig1" cx="30%" cy="50%" r="80%" fx="40%" fy="60%">
+            <stop offset="0%" stop-color="#23232e" stop-opacity="0.9"/>
+            <stop offset="65%" stop-color="#292936" stop-opacity="0.85"/>
+            <stop offset="100%" stop-color="#1a1b22" stop-opacity="1"/>
           </radialGradient>
-          <linearGradient id="japan2" x1="0" y1="0" x2="1920" y2="280" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#191A22" stop-opacity="0.78"/>
-            <stop offset="1" stop-color="#27272e" stop-opacity="0.84"/>
-          </linearGradient>
+          <radialGradient id="japanbig2" cx="80%" cy="20%" r="70%" fx="75%" fy="25%">
+            <stop offset="0%" stop-color="#25243c" stop-opacity="0.3"/>
+            <stop offset="80%" stop-color="#212027" stop-opacity="0.05"/>
+            <stop offset="100%" stop-color="#191a22" stop-opacity="0"/>
+          </radialGradient>
         </defs>
-        <!-- Bold, cartoonish neutral Japanese "cloud" waves -->
-        <ellipse cx="350" cy="110" rx="380" ry="80" fill="url(#japan1)" opacity="0.21"/>
-        <ellipse cx="900" cy="240" rx="450" ry="110" fill="url(#japan2)" opacity="0.17"/>
-        <ellipse cx="1550" cy="170" rx="390" ry="100" fill="url(#japan1)" opacity="0.20"/>
-        <path d="M230 330Q430 200 690 360T990 250" stroke="#23232d" stroke-width="16" fill="none" opacity="0.13"/>
-        <path d="M1280 350Q1420 280 1570 310T1780 240" stroke="#212127" stroke-width="14" fill="none" opacity="0.13"/>
+        <!-- Layers of waves and clouds -->
+        <ellipse cx="340" cy="130" rx="430" ry="85" fill="url(#japanbig1)" opacity="0.32"/>
+        <ellipse cx="960" cy="350" rx="620" ry="140" fill="url(#japanbig2)" opacity="0.20"/>
+        <ellipse cx="1620" cy="200" rx="420" ry="110" fill="url(#japanbig1)" opacity="0.24"/>
+        <ellipse cx="400" cy="390" rx="260" ry="60" fill="#23232d" opacity="0.13"/>
+        <ellipse cx="1500" cy="390" rx="270" ry="70" fill="#212127" opacity="0.13"/>
+        <path d="M100 420Q480 300 940 480T1820 460" stroke="#262639" stroke-width="23" fill="none" opacity="0.13"/>
+        <path d="M230 330Q430 200 690 360T990 250" stroke="#23232d" stroke-width="14" fill="none" opacity="0.12"/>
+        <path d="M1280 350Q1420 280 1570 310T1780 240" stroke="#212127" stroke-width="11" fill="none" opacity="0.13"/>
       </svg>
     </div>
     <h2>Pick Your Ride</h2>
@@ -93,22 +96,9 @@
         <h3>Mazda MX-5</h3>
       </div>
     </div>
-    <div class="divider-svg">
-      <!-- Smooth SVG wave divider below car cards -->
-      <svg viewBox="0 0 1920 110" width="100%" height="110" fill="none" preserveAspectRatio="none">
-        <path d="M0 110Q320 80 640 110T1280 90Q1600 70 1920 110V0H0Z" fill="#191A22"/>
-        <path d="M0 110Q320 100 640 120T1280 110Q1600 90 1920 110V0H0Z" fill="url(#dividergrad1)"/>
-        <defs>
-          <linearGradient id="dividergrad1" x1="0" y1="0" x2="1920" y2="110" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#ff0050" stop-opacity="0.13"/>
-            <stop offset="1" stop-color="#f76b1c" stop-opacity="0.11"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
   </section>
 
-  <!-- Modshop Section (tall, full width) -->
+  <!-- Modshop Section (tall full width, no divider above) -->
   <section id="modshop" class="section-hero modshop-hero fade-in">
     <video autoplay loop muted playsinline preload="auto" class="full-bg-video">
       <source src="assets/neon-carloop.mp4" type="video/mp4">
@@ -117,21 +107,9 @@
       <h2>Mod Shop</h2>
       <p>Upgrade your car with turbo kits, coilovers, brakes, and more. The Mod Shop is where champions are made.</p>
     </div>
-    <div class="divider-svg">
-      <svg viewBox="0 0 1920 110" width="100%" height="110" fill="none" preserveAspectRatio="none">
-        <path d="M0 110Q320 60 640 90T1280 110Q1600 80 1920 110V0H0Z" fill="#191A22"/>
-        <path d="M0 110Q320 100 640 120T1280 110Q1600 90 1920 110V0H0Z" fill="url(#dividergrad2)"/>
-        <defs>
-          <linearGradient id="dividergrad2" x1="0" y1="0" x2="1920" y2="110" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#ff0050" stop-opacity="0.13"/>
-            <stop offset="1" stop-color="#f76b1c" stop-opacity="0.11"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
   </section>
 
-  <!-- Hazards Section (tall, full width, staggered overlay) -->
+  <!-- Hazards Section (tall, full width, glass card staggered to the right) -->
   <section id="hazards" class="section-hero hazard-hero fade-in">
     <video autoplay loop muted playsinline preload="auto" class="full-bg-video">
       <source src="assets/backandforth.mp4" type="video/mp4">
@@ -155,7 +133,7 @@
     </div>
   </section>
 
-  <!-- Poster Art Banner & CTA -->
+  <!-- Poster Art Banner & CTA (small) -->
   <section class="section-banner poster-art-banner">
     <img src="assets/hero-bg.jpg" alt="Overdrive Poster Art" class="poster-art-img" />
     <div class="banner-cta glass">
