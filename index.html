@@ -17,7 +17,6 @@
       <li><a href="#cars">Cars</a></li>
       <li><a href="#modshop">Mod Shop</a></li>
       <li><a href="#hazards">Hazards</a></li>
-      <li><a href="#showcase">Showcase</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
@@ -38,7 +37,7 @@
   <!-- Cars Section -->
   <section id="cars" class="section fade-in glass">
     <h2>Pick Your Ride</h2>
-    <div class="car-row-scroll">
+    <div class="car-row-noscroll">
       <div class="car-card glass">
         <img src="assets/car-toyota-gt86.jpg" alt="Toyota GT86" />
         <h3>Toyota GT86</h3>
@@ -58,19 +57,22 @@
     </div>
   </section>
 
-  <!-- Modshop Section with Neon Car Video and Modshop Image -->
+  <!-- Modshop Section with Two Videos -->
   <section id="modshop" class="section fade-in glass">
     <h2>Mod Shop</h2>
     <div class="modshop-flex">
-      <div class="video-card glass">
-        <video autoplay loop muted playsinline preload="auto">
+      <div class="video-double">
+        <video autoplay loop muted playsinline preload="auto" class="modshop-main-video">
           <source src="assets/neoncarupgraded86.mp4" type="video/mp4">
         </video>
-        <div class="video-overlay">
-          <p>Upgrade your car with turbo kits, coilovers, brakes, and more. Fine-tune your build and dominate every track!</p>
-        </div>
+        <video autoplay loop muted playsinline preload="auto" class="modshop-loop-video">
+          <source src="assets/neon-carloop.mp4" type="video/mp4">
+        </video>
       </div>
-      <img src="assets/modshop.png" alt="Mod Shop" class="glass" style="max-width:320px; margin-left:1.5rem;">
+      <img src="assets/modshop.png" alt="Mod Shop" class="glass" style="max-width:320px; margin-left:1.2rem;">
+    </div>
+    <div class="video-overlay modshop-caption">
+      <p>Upgrade your car with turbo kits, coilovers, brakes, and more. The Mod Shop is where champions are made.</p>
     </div>
   </section>
 
@@ -84,20 +86,6 @@
         <video autoplay loop muted playsinline preload="auto" style="width:240px; border-radius:14px; margin-top:1.2rem;">
           <source src="assets/backandforth.mp4" type="video/mp4">
         </video>
-      </div>
-    </div>
-  </section>
-
-  <!-- Showcase Section with Neon Car Loop -->
-  <section id="showcase" class="section fade-in glass">
-    <h2>Showcase</h2>
-    <div class="video-card glass">
-      <video autoplay loop muted playsinline preload="auto">
-        <source src="assets/neon-carloop.mp4" type="video/mp4">
-      </video>
-      <div class="video-overlay">
-        <h3>Looping Action</h3>
-        <p>See the thrill of Overdrive in non-stop neon racing action.</p>
       </div>
     </div>
   </section>
