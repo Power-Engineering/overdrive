@@ -1,135 +1,151 @@
-/* assets/styles.css */
-
-body {
+/* Reset + Base Styles */
+* {
   margin: 0;
-  font-family: 'Helvetica Neue', sans-serif;
-  background-color: #111;
-  color: #eee;
-  line-height: 1.6;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-section {
-  padding: 60px 20px;
-  max-width: 1200px;
-  margin: auto;
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #0b0b0b;
+  color: #f2f2f2;
+  line-height: 1.6;
+  scroll-behavior: smooth;
 }
 
 h1, h2 {
-  text-align: center;
-  margin-bottom: 20px;
+  font-family: 'Orbitron', sans-serif;
+  color: #ffffff;
 }
 
+img, video {
+  max-width: 100%;
+  display: block;
+  border-radius: 12px;
+}
+
+/* Hero Video Section */
 .hero {
-  background-image: url('assets/hero-bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  position: relative;
   height: 100vh;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  text-align: center;
+}
+
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  filter: brightness(0.6);
 }
 
 .overlay {
+  position: relative;
+  z-index: 1;
   background: rgba(0, 0, 0, 0.5);
-  padding: 40px;
-  text-align: center;
-  color: white;
+  padding: 3rem;
+  border-radius: 10px;
 }
 
 .overlay h1 {
-  font-size: 4rem;
-  margin: 0;
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
 }
 
 .overlay p {
-  font-size: 1.2rem;
-  margin: 10px 0 30px;
+  font-size: 1.3rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
 }
 
 .btn {
-  background: #ff0055;
-  color: white;
-  padding: 12px 24px;
-  text-decoration: none;
-  border-radius: 8px;
+  background: #ff0050;
+  color: #fff;
+  padding: 0.8rem 1.6rem;
   font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.btn:hover {
+  background: #e60047;
+}
+
+/* Section Layouts */
+.section {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: auto;
 }
 
 .two-column {
   display: flex;
   flex-wrap: wrap;
-  gap: 40px;
+  gap: 2rem;
   align-items: center;
   justify-content: center;
 }
 
-.two-column .text, .two-column .image {
-  flex: 1 1 300px;
+.two-column .text {
+  flex: 1;
+  min-width: 280px;
 }
 
-.two-column .image img {
-  width: 100%;
-  border-radius: 12px;
+.two-column .image {
+  flex: 1;
+  min-width: 280px;
 }
 
 .card-grid {
   display: flex;
-  gap: 20px;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
-.car-card img {
-  width: 100%;
+.car-card {
   max-width: 320px;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  border-radius: 12px;
-  transition: transform 0.3s;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
-}
-
-.car-card img:hover {
-  transform: scale(1.05);
+  flex: 1;
 }
 
 ul {
   list-style: disc;
-  padding-left: 20px;
+  margin: 2rem auto;
   max-width: 800px;
-  margin: auto;
-  font-size: 1.1rem;
+  padding-left: 2rem;
 }
 
 .tile-images {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  gap: 2rem;
   justify-content: center;
-  margin-top: 20px;
-}
-
-.tile-images img {
-  width: 250px;
-  border-radius: 10px;
-}
-
-video {
-  display: block;
-  max-width: 800px;
-  width: 100%;
-  margin: 20px auto;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
+  margin-top: 2rem;
+  flex-wrap: wrap;
 }
 
 footer {
-  background: #000;
-  color: #888;
   text-align: center;
-  padding: 30px 10px;
+  background-color: #111;
+  color: #888;
+  padding: 2rem;
   font-size: 0.9rem;
+}
+
+footer a {
+  color: #ff0050;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
 }
