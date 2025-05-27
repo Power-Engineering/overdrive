@@ -11,85 +11,109 @@
 <body>
 
   <!-- Navbar -->
-  <nav class="navbar">
+  <nav class="navbar glass">
     <div class="logo">OVERDRIVE</div>
     <ul>
       <li><a href="#cars">Cars</a></li>
       <li><a href="#modshop">Mod Shop</a></li>
       <li><a href="#hazards">Hazards</a></li>
+      <li><a href="#showcase">Showcase</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
 
-  <!-- Hero Section -->
-<header class="hero">
-  <video autoplay loop muted playsinline class="hero-video">
-    <source src="assets/neoncarupgraded86.mp4" type="video/mp4">
-  </video>
-  <div class="overlay glass">
-    <h1>OVERDRIVE</h1>
-    <p class="subtitle">Deck-build. Tune up. Take the lead.</p>
-    <a href="#cars" class="btn pulse">Pick Your Car</a>
-    <div class="down-chevron"></div>
-  </div>
-</header>
-
-<section id="showdown" class="section video-section">
-  <div class="video-card">
-    <video autoplay loop muted playsinline>
-      <source src="assets/showdowncover.mp4" type="video/mp4">
+  <!-- Hero Section with Video -->
+  <header class="hero">
+    <video autoplay loop muted playsinline class="hero-video">
+      <source src="assets/neoncarupgraded86.mp4" type="video/mp4">
     </video>
-    <div class="video-overlay">
-      <h2>Race Showdown</h2>
-      <p>Experience intense head-to-head action in the Overdrive circuit.</p>
+    <div class="overlay glass fade-in">
+      <h1>OVERDRIVE</h1>
+      <p class="subtitle">Deck-build. Tune up. Take the lead.</p>
+      <a href="#cars" class="btn pulse">Pick Your Car</a>
+      <div class="down-chevron"></div>
     </div>
-  </div>
-</section>
+  </header>
 
   <!-- Cars Section -->
-  <section id="cars" class="section">
+  <section id="cars" class="section fade-in glass">
     <h2>Pick Your Ride</h2>
     <div class="car-grid">
-      <div class="car-card">
+      <div class="car-card glass">
         <img src="assets/car-toyota-gt86.jpg" alt="Toyota GT86" />
         <h3>Toyota GT86</h3>
       </div>
-      <div class="car-card">
+      <div class="car-card glass">
         <img src="assets/car-nissan-370z.jpg" alt="Nissan 370Z" />
         <h3>Nissan 370Z</h3>
       </div>
-      <div class="car-card">
+      <div class="car-card glass">
         <img src="assets/car-audi-tt.jpg" alt="Audi TT" />
         <h3>Audi TT</h3>
       </div>
     </div>
   </section>
 
-  <!-- Modshop Section -->
-  <section id="modshop" class="section">
+  <!-- Modshop Section with Video Card -->
+  <section id="modshop" class="section fade-in glass">
     <h2>Mod Shop</h2>
-    <div class="modshop-flex">
-      <img src="assets/modshop.png" alt="Mod Shop" />
-      <div>
-        <p>Upgrade your car with performance mods: turbo kits, coilovers, brakes, and more. Fine-tune your build and dominate every track!</p>
+    <div class="video-card glass">
+      <video autoplay loop muted playsinline>
+        <source src="assets/backandforth.mp4" type="video/mp4">
+      </video>
+      <div class="video-overlay">
+        <p>Upgrade your car with turbo kits, coilovers, brakes, and more. Fine-tune your build and dominate every track!</p>
       </div>
     </div>
   </section>
 
   <!-- Hazards Section -->
-  <section id="hazards" class="section">
+  <section id="hazards" class="section fade-in glass">
     <h2>Hazards & Events</h2>
-    <div class="hazard-flex">
-      <img src="assets/hazards.png" alt="Race Hazards and Events" />
-      <div>
+    <div class="video-card glass">
+      <video autoplay loop muted playsinline>
+        <source src="assets/neon-carloop.mp4" type="video/mp4">
+      </video>
+      <div class="video-overlay">
         <p>Dynamic hazards like rain, engine trouble, and obstacles can change the outcome of any race. Adapt and use your upgrades wisely to survive and win.</p>
       </div>
     </div>
   </section>
 
-  <footer id="contact">
+  <!-- Showcase Section -->
+  <section id="showcase" class="section fade-in glass">
+    <h2>Showdown</h2>
+    <div class="video-card glass">
+      <video autoplay loop muted playsinline>
+        <source src="assets/showdowncover.mp4" type="video/mp4">
+      </video>
+      <div class="video-overlay">
+        <h3>Head-to-Head Racing</h3>
+        <p>Experience intense head-to-head action in the Overdrive circuit.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="section cta-section fade-in glass">
+    <h2>Try Overdrive Free</h2>
+    <a href="assets/Overdrive_PrintAndPlay.pdf" class="btn pulse big-btn">Download Print & Play Kit</a>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact" class="glass">
     <p>&copy; 2025 Overdrive. All rights reserved.</p>
     <p><a href="mailto:contact@overdrivegame.com">Contact Us</a></p>
   </footer>
+
+  <script>
+    // Section fade-in animation
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.13 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
