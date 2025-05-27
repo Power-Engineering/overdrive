@@ -46,28 +46,28 @@
     </div>
   </header>
 
-  <!-- Cars Section WITH Japanese-art SVG background and smooth wave divider -->
+  <!-- Cars Section WITH Japanese-art SVG background, no deadspace -->
   <section id="cars" class="section fade-in glass cars-bg-art">
     <div class="cars-art-bg">
-      <!-- Stylized neutral SVG pattern -->
-      <svg width="100%" height="260" viewBox="0 0 1920 260" fill="none" preserveAspectRatio="none">
+      <!-- Stylized neutral SVG pattern (covers 100% height and width) -->
+      <svg width="100%" height="420" viewBox="0 0 1920 420" fill="none" preserveAspectRatio="none">
         <defs>
           <radialGradient id="japan1" cx="30%" cy="50%" r="80%" fx="36%" fy="55%" gradientTransform="rotate(-20)">
             <stop offset="0%" stop-color="#212026" stop-opacity="0.9"/>
             <stop offset="65%" stop-color="#28282f" stop-opacity="0.82"/>
             <stop offset="100%" stop-color="#191A22" stop-opacity="1"/>
           </radialGradient>
-          <linearGradient id="japan2" x1="0" y1="0" x2="1920" y2="180" gradientUnits="userSpaceOnUse">
+          <linearGradient id="japan2" x1="0" y1="0" x2="1920" y2="280" gradientUnits="userSpaceOnUse">
             <stop stop-color="#191A22" stop-opacity="0.78"/>
             <stop offset="1" stop-color="#27272e" stop-opacity="0.84"/>
           </linearGradient>
         </defs>
-        <!-- A few cartoonish neutral Japanese "cloud" waves -->
-        <ellipse cx="300" cy="70" rx="320" ry="60" fill="url(#japan1)" opacity="0.21"/>
-        <ellipse cx="800" cy="160" rx="330" ry="70" fill="url(#japan2)" opacity="0.18"/>
-        <ellipse cx="1580" cy="110" rx="300" ry="50" fill="url(#japan1)" opacity="0.19"/>
-        <path d="M200 160Q330 120 410 200T650 160" stroke="#23232d" stroke-width="10" fill="none" opacity="0.12"/>
-        <path d="M1200 200Q1350 140 1450 180T1600 140" stroke="#212127" stroke-width="10" fill="none" opacity="0.14"/>
+        <!-- Bold, cartoonish neutral Japanese "cloud" waves -->
+        <ellipse cx="350" cy="110" rx="380" ry="80" fill="url(#japan1)" opacity="0.21"/>
+        <ellipse cx="900" cy="240" rx="450" ry="110" fill="url(#japan2)" opacity="0.17"/>
+        <ellipse cx="1550" cy="170" rx="390" ry="100" fill="url(#japan1)" opacity="0.20"/>
+        <path d="M230 330Q430 200 690 360T990 250" stroke="#23232d" stroke-width="16" fill="none" opacity="0.13"/>
+        <path d="M1280 350Q1420 280 1570 310T1780 240" stroke="#212127" stroke-width="14" fill="none" opacity="0.13"/>
       </svg>
     </div>
     <h2>Pick Your Ride</h2>
@@ -94,6 +94,7 @@
       </div>
     </div>
     <div class="divider-svg">
+      <!-- Smooth SVG wave divider below car cards -->
       <svg viewBox="0 0 1920 110" width="100%" height="110" fill="none" preserveAspectRatio="none">
         <path d="M0 110Q320 80 640 110T1280 90Q1600 70 1920 110V0H0Z" fill="#191A22"/>
         <path d="M0 110Q320 100 640 120T1280 110Q1600 90 1920 110V0H0Z" fill="url(#dividergrad1)"/>
@@ -107,7 +108,7 @@
     </div>
   </section>
 
-  <!-- Modshop Section (tall full width) -->
+  <!-- Modshop Section (tall, full width) -->
   <section id="modshop" class="section-hero modshop-hero fade-in">
     <video autoplay loop muted playsinline preload="auto" class="full-bg-video">
       <source src="assets/neon-carloop.mp4" type="video/mp4">
@@ -130,12 +131,12 @@
     </div>
   </section>
 
-  <!-- Hazards Section (tall full width) -->
+  <!-- Hazards Section (tall, full width, staggered overlay) -->
   <section id="hazards" class="section-hero hazard-hero fade-in">
     <video autoplay loop muted playsinline preload="auto" class="full-bg-video">
       <source src="assets/backandforth.mp4" type="video/mp4">
     </video>
-    <div class="section-hero-overlay glass">
+    <div class="section-hero-overlay glass hazard-stagger">
       <h2>Hazards & Events</h2>
       <h3>Race-changing hazards</h3>
       <p>Rain, engine trouble, and obstacles change every race. Adapt and upgrade to survive and win.</p>
