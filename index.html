@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Overdrive – The ultimate deck-building street racing board game." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="description" content="Overdrive – The ultimate deck-building street racing board game. Deck-build, tune up, and race to victory!" />
   <title>OVERDRIVE – Racing Board Game</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
 <body>
 
   <!-- Navbar -->
-  <nav class="navbar glass">
+  <nav class="navbar glass" aria-label="Main Navigation">
     <div class="logo">OVERDRIVE</div>
     <ul>
       <li><a href="#cars">Cars</a></li>
@@ -21,113 +21,116 @@
     </ul>
   </nav>
 
-  <!-- Hero Section -->
-  <header class="hero">
-    <video autoplay loop muted playsinline preload="auto" class="hero-video">
-      <source src="assets/showdowncover.mp4" type="video/mp4">
-    </video>
-    <div class="overlay glass fade-in">
-      <h1>OVERDRIVE</h1>
-      <p class="subtitle">Deck-build. Tune up. Take the lead.</p>
-      <a href="#cars" class="btn pulse">Pick Your Car</a>
-      <div class="down-chevron"></div>
-    </div>
-    <div class="hero-wave">
-      <svg width="100%" height="60" viewBox="0 0 1920 60" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-        <path d="M0 60V20C480 80 1440 0 1920 60V0H0V60Z" fill="#181A22"/>
-        <path d="M0 60V40C480 110 1440 20 1920 60V0H0V60Z" fill="url(#gradient1)"/>
-        <defs>
-          <linearGradient id="gradient1" x1="0" y1="0" x2="1920" y2="60" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#ff0050" stop-opacity="0.18"/>
-            <stop offset="1" stop-color="#f76b1c" stop-opacity="0.17"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-  </header>
-
-  <!-- Cars Section: Full Width, Tall, No Glow Cutoff -->
-  <section id="cars" class="cars-bg-art fade-in">
-    <div class="cars-art-bg"></div>
-    <div class="cars-full-row">
-      <div class="car-grid-spacer"></div>
-      <h2>Pick Your Ride</h2>
-      <div class="car-row-noscroll">
-        <div class="car-card glass">
-          <img src="assets/car-toyota-gt86.jpg" alt="Toyota GT86" />
-          <h3>Toyota GT86</h3>
-        </div>
-        <div class="car-card glass">
-          <img src="assets/car-nissan-370z.jpg" alt="Nissan 370Z" />
-          <h3>Nissan 370Z</h3>
-        </div>
-        <div class="car-card glass">
-          <img src="assets/car-audi-tt.jpg" alt="Audi TT" />
-          <h3>Audi TT</h3>
-        </div>
-        <div class="car-card glass">
-          <img src="assets/car-fordmustang.jpg" alt="Ford Mustang GT" />
-          <h3>Ford Mustang GT</h3>
-        </div>
-        <div class="car-card glass">
-          <img src="assets/car-mazda-mx-5.png" alt="Mazda MX-5" />
-          <h3>Mazda MX-5</h3>
-        </div>
+  <main>
+    <!-- Hero Section -->
+    <header class="hero" id="home">
+      <video autoplay loop muted playsinline preload="auto" class="hero-video" aria-hidden="true">
+        <source src="assets/showdowncover.mp4" type="video/mp4">
+      </video>
+      <div class="overlay glass fade-in">
+        <h1>OVERDRIVE</h1>
+        <p class="subtitle">Deck-build. Tune up. Take the lead.</p>
+        <a href="#cars" class="btn pulse">Pick Your Car</a>
+        <div class="down-chevron" aria-hidden="true"></div>
       </div>
-      <div class="car-grid-spacer"></div>
-    </div>
-  </section>
+      <div class="hero-wave" aria-hidden="true">
+        <svg width="100%" height="60" viewBox="0 0 1920 60" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M0 60V20C480 80 1440 0 1920 60V0H0V60Z" fill="#181A22"/>
+          <path d="M0 60V40C480 110 1440 20 1920 60V0H0V60Z" fill="url(#gradient1)"/>
+          <defs>
+            <linearGradient id="gradient1" x1="0" y1="0" x2="1920" y2="60" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#ff0050" stop-opacity="0.18"/>
+              <stop offset="1" stop-color="#f76b1c" stop-opacity="0.17"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </header>
 
-  <!-- Modshop Section (full width, centered overlay) -->
-  <section id="modshop" class="section-hero modshop-hero fade-in">
-    <video autoplay loop muted playsinline preload="auto" class="full-bg-video">
-      <source src="assets/neon-carloop.mp4" type="video/mp4">
-    </video>
-    <div class="section-hero-overlay glass">
-      <h2>Mod Shop</h2>
-      <p>Upgrade your car with turbo kits, coilovers, brakes, and more. The Mod Shop is where champions are made.</p>
-    </div>
-  </section>
+    <!-- Cars Section -->
+    <section id="cars" class="cars-bg-art fade-in" aria-label="Choose Your Car">
+      <div class="cars-art-bg"></div>
+      <div class="cars-full-row">
+        <div class="car-grid-spacer" aria-hidden="true"></div>
+        <h2>Pick Your Ride</h2>
+        <div class="car-row-noscroll" tabindex="0" aria-label="Car selection, scrollable">
+          <div class="car-card glass">
+            <img src="assets/car-toyota-gt86.jpg" alt="Toyota GT86 – Agile street racer" loading="lazy" />
+            <h3>Toyota GT86</h3>
+          </div>
+          <div class="car-card glass">
+            <img src="assets/car-nissan-370z.jpg" alt="Nissan 370Z – Classic sports coupe" loading="lazy" />
+            <h3>Nissan 370Z</h3>
+          </div>
+          <div class="car-card glass">
+            <img src="assets/car-audi-tt.jpg" alt="Audi TT – Sleek performance car" loading="lazy" />
+            <h3>Audi TT</h3>
+          </div>
+          <div class="car-card glass">
+            <img src="assets/car-fordmustang.jpg" alt="Ford Mustang GT – American muscle" loading="lazy" />
+            <h3>Ford Mustang GT</h3>
+          </div>
+          <div class="car-card glass">
+            <img src="assets/car-mazda-mx-5.png" alt="Mazda MX-5 – Lightweight roadster" loading="lazy" />
+            <h3>Mazda MX-5</h3>
+          </div>
+        </div>
+        <div class="car-grid-spacer" aria-hidden="true"></div>
+      </div>
+    </section>
 
-  <!-- Hazards Section (centered overlay, full width) -->
-  <section id="hazards" class="section-hero hazard-hero fade-in">
-    <video autoplay loop muted playsinline preload="auto" class="full-bg-video">
-      <source src="assets/backandforth.mp4" type="video/mp4">
-    </video>
-    <div class="section-hero-overlay glass center-overlay">
-      <h2>Hazards & Events</h2>
-      <h3>Race-changing hazards</h3>
-      <p>Rain, engine trouble, and obstacles change every race. Adapt and upgrade to survive and win.</p>
-    </div>
-    <div class="divider-svg">
-      <svg viewBox="0 0 1920 80" width="100%" height="80" fill="none" preserveAspectRatio="none">
-        <path d="M0 80Q480 60 960 80T1920 80V0H0Z" fill="#191A22"/>
-        <path d="M0 80Q480 80 960 90T1920 80V0H0Z" fill="url(#dividergrad3)"/>
-        <defs>
-          <linearGradient id="dividergrad3" x1="0" y1="0" x2="1920" y2="80" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#ff0050" stop-opacity="0.14"/>
-            <stop offset="1" stop-color="#f76b1c" stop-opacity="0.09"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-  </section>
+    <!-- Modshop Section -->
+    <section id="modshop" class="section-hero modshop-hero fade-in" aria-label="Mod Shop">
+      <video autoplay loop muted playsinline preload="auto" class="full-bg-video" aria-hidden="true">
+        <source src="assets/neon-carloop.mp4" type="video/mp4">
+      </video>
+      <div class="section-hero-overlay glass">
+        <h2>Mod Shop</h2>
+        <p>Upgrade your car with turbo kits, coilovers, brakes, and more. The Mod Shop is where champions are made.</p>
+      </div>
+    </section>
 
-  <!-- Poster Art Banner & CTA -->
-  <section class="section-banner poster-art-banner">
-    <img src="assets/hero-bg.jpg" alt="Overdrive Poster Art" class="poster-art-img" />
-    <div class="banner-cta glass">
-      <h2>Try Overdrive Free</h2>
-      <a href="assets/Overdrive_PrintAndPlay.pdf" class="btn pulse big-btn">Download Print & Play Kit</a>
-    </div>
-  </section>
+    <!-- Hazards Section -->
+    <section id="hazards" class="section-hero hazard-hero fade-in" aria-label="Hazards & Events">
+      <video autoplay loop muted playsinline preload="auto" class="full-bg-video" aria-hidden="true">
+        <source src="assets/backandforth.mp4" type="video/mp4">
+      </video>
+      <div class="section-hero-overlay glass center-overlay">
+        <h2>Hazards & Events</h2>
+        <h3>Race-changing hazards</h3>
+        <p>Rain, engine trouble, and obstacles change every race. Adapt and upgrade to survive and win.</p>
+      </div>
+      <div class="divider-svg" aria-hidden="true">
+        <svg viewBox="0 0 1920 80" width="100%" height="80" fill="none" preserveAspectRatio="none">
+          <path d="M0 80Q480 60 960 80T1920 80V0H0Z" fill="#191A22"/>
+          <path d="M0 80Q480 80 960 90T1920 80V0H0Z" fill="url(#dividergrad3)"/>
+          <defs>
+            <linearGradient id="dividergrad3" x1="0" y1="0" x2="1920" y2="80" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#ff0050" stop-opacity="0.14"/>
+              <stop offset="1" stop-color="#f76b1c" stop-opacity="0.09"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Poster Art Banner & CTA -->
+    <section class="section-banner poster-art-banner" aria-label="Try Overdrive Free">
+      <img src="assets/hero-bg.jpg" alt="Overdrive board game poster art" class="poster-art-img" loading="lazy" />
+      <div class="banner-cta glass">
+        <h2>Try Overdrive Free</h2>
+        <a href="assets/Overdrive_PrintAndPlay.pdf" class="btn pulse big-btn" download>Download Print & Play Kit</a>
+      </div>
+    </section>
+  </main>
 
   <!-- Footer -->
-  <footer id="contact" class="glass">
+  <footer id="contact" class="glass" aria-label="Footer">
     <p>&copy; 2025 Overdrive. All rights reserved.</p>
     <p><a href="mailto:contact@overdrivegame.com">Contact Us</a></p>
   </footer>
 
+  <!-- Fade-in Script -->
   <script>
     // Section fade-in animation
     const observer = new IntersectionObserver((entries) => {
