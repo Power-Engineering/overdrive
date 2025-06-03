@@ -9,11 +9,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
   <!-- Navbar -->
-  <nav class="navbar glass" aria-label="Main Navigation">
-    <div class="logo">OVERDRIVE</div>
-    <ul>
+  <nav class="navbar glass">
+    <div class="logo kinetic-logo">OVERDRIVE</div>
+    <button class="hamburger" aria-label="Open navigation">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links">
       <li><a href="#cars">Cars</a></li>
       <li><a href="#modshop">Mod Shop</a></li>
       <li><a href="#hazards">Hazards</a></li>
@@ -28,9 +30,9 @@
         <source src="assets/showdowncover.mp4" type="video/mp4">
       </video>
       <div class="overlay glass fade-in">
-        <h1>OVERDRIVE</h1>
-        <p class="subtitle">Deck-build. Tune up. Take the lead.</p>
-        <a href="#cars" class="btn pulse">Pick Your Car</a>
+        <h1 class="hero-title kinetic-text">OVERDRIVE</h1>
+        <p class="subtitle">Deck-build. Tune up. <span class="highlight-gradient">Take the lead.</span></p>
+        <a href="#cars" class="btn pulse hero-btn">Pick Your Car</a>
         <div class="down-chevron" aria-hidden="true"></div>
       </div>
       <div class="hero-wave" aria-hidden="true">
@@ -54,23 +56,23 @@
         <div class="car-grid-spacer" aria-hidden="true"></div>
         <h2>Pick Your Ride</h2>
         <div class="car-row-noscroll" tabindex="0" aria-label="Car selection, scrollable">
-          <div class="car-card glass">
+          <div class="car-card glass" data-car="Toyota GT86" data-img="assets/car-toyota-gt86.jpg">
             <img src="assets/car-toyota-gt86.jpg" alt="Toyota GT86 – Agile street racer" loading="lazy" />
             <h3>Toyota GT86</h3>
           </div>
-          <div class="car-card glass">
+          <div class="car-card glass" data-car="Nissan 370Z" data-img="assets/car-nissan-370z.jpg">
             <img src="assets/car-nissan-370z.jpg" alt="Nissan 370Z – Classic sports coupe" loading="lazy" />
             <h3>Nissan 370Z</h3>
           </div>
-          <div class="car-card glass">
+          <div class="car-card glass" data-car="Audi TT" data-img="assets/car-audi-tt.jpg">
             <img src="assets/car-audi-tt.jpg" alt="Audi TT – Sleek performance car" loading="lazy" />
             <h3>Audi TT</h3>
           </div>
-          <div class="car-card glass">
+          <div class="car-card glass" data-car="Ford Mustang GT" data-img="assets/car-fordmustang.jpg">
             <img src="assets/car-fordmustang.jpg" alt="Ford Mustang GT – American muscle" loading="lazy" />
             <h3>Ford Mustang GT</h3>
           </div>
-          <div class="car-card glass">
+          <div class="car-card glass" data-car="Mazda MX-5" data-img="assets/car-mazda-mx-5.png">
             <img src="assets/car-mazda-mx-5.png" alt="Mazda MX-5 – Lightweight roadster" loading="lazy" />
             <h3>Mazda MX-5</h3>
           </div>
@@ -78,6 +80,16 @@
         <div class="car-grid-spacer" aria-hidden="true"></div>
       </div>
     </section>
+
+    <!-- Car Modal (hidden by default) -->
+    <div class="modal" id="car-modal" aria-modal="true" role="dialog">
+      <div class="modal-content glass">
+        <button class="modal-close" aria-label="Close">&times;</button>
+        <img src="" alt="" class="modal-img" />
+        <h3 class="modal-title"></h3>
+        <p class="modal-desc"></p>
+      </div>
+    </div>
 
     <!-- Modshop Section -->
     <section id="modshop" class="section-hero modshop-hero fade-in" aria-label="Mod Shop">
@@ -126,19 +138,16 @@
 
   <!-- Footer -->
   <footer id="contact" class="glass" aria-label="Footer">
+    <div class="footer-social">
+      <!-- Put your real social links here -->
+      <a href="#" class="social-icon" aria-label="Instagram"><svg width="22" height="22"><circle cx="11" cy="11" r="10" fill="none" stroke="#ff0050" stroke-width="2"/><circle cx="11" cy="11" r="5" fill="none" stroke="#ff0050" stroke-width="2"/><circle cx="16" cy="6" r="1" fill="#ff0050"/></svg></a>
+      <a href="#" class="social-icon" aria-label="Discord"><svg width="22" height="22"><rect x="2" y="6" width="18" height="10" rx="5" fill="none" stroke="#ff0050" stroke-width="2"/><circle cx="7.5" cy="11" r="1.5" fill="#ff0050"/><circle cx="14.5" cy="11" r="1.5" fill="#ff0050"/></svg></a>
+      <!-- ... -->
+    </div>
     <p>&copy; 2025 Overdrive. All rights reserved.</p>
     <p><a href="mailto:contact@overdrivegame.com">Contact Us</a></p>
   </footer>
 
-  <!-- Fade-in Script -->
-  <script>
-    // Section fade-in animation
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
-    }, { threshold: 0.13 });
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-  </script>
+  <script src="main.js"></script>
 </body>
 </html>
