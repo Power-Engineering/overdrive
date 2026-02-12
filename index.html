@@ -2,87 +2,440 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <meta name="description" content="Overdrive – The ultimate deck-building street racing board game. Deck-build, tune up, and race to victory!" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Overdrive – A modern deck-building street racing board game. Deck-build, tune up, and take the lead." />
+  <meta name="theme-color" content="#070A12" />
   <title>OVERDRIVE – Racing Board Game</title>
-<link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <!-- Social preview -->
+  <meta property="og:title" content="OVERDRIVE – Racing Board Game" />
+  <meta property="og:description" content="Deck-build. Tune up. Take the lead." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/hero-bg.jpg" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <!-- Your existing stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- ✅ Index-only “modern art / premium” layer (does NOT require editing style.css yet) -->
+  <style>
+    /* Minimal, index-only upgrades: background art, spacing, nicer hero layout, premium cards */
+    :root{
+      --ink:#070A12;
+      --fog:rgba(255,255,255,.08);
+      --fog2:rgba(255,255,255,.12);
+      --stroke:rgba(255,255,255,.14);
+      --txt:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.72);
+      --accentA:#7C5CFF;
+      --accentB:#19D3FF;
+      --accentC:#38F9A5;
+      --shadow: 0 18px 80px rgba(0,0,0,.55);
+      --radius: 18px;
+      --max: 1120px;
+    }
+    body{
+      background:
+        radial-gradient(1200px 800px at 18% 8%, rgba(124,92,255,.18), transparent 60%),
+        radial-gradient(1100px 760px at 82% 28%, rgba(25,211,255,.14), transparent 56%),
+        radial-gradient(900px 650px at 55% 90%, rgba(56,249,165,.10), transparent 62%),
+        linear-gradient(115deg, #0a0d18 0%, #120c18 100%);
+      color: var(--txt);
+    }
+    /* Subtle grain */
+    body::after{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      z-index:0;
+      opacity:.25;
+      mix-blend-mode: overlay;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+    }
+    /* Keep your existing sticky navbar above art layers */
+    .navbar{ z-index: 9999; }
+
+    /* Container helper (index-only) */
+    .container{
+      width:min(var(--max), calc(100% - 44px));
+      margin-inline:auto;
+      position:relative;
+      z-index:2;
+    }
+
+    /* Hero composition */
+    header.hero{
+      min-height: 96vh;
+      isolation: isolate;
+    }
+    .hero .hero-video{
+      filter: saturate(1.08) contrast(1.08) brightness(.82);
+    }
+    .hero .overlay.glass{
+      max-width: 740px;
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      border: 1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px) saturate(1.12);
+    }
+    /* Modern art “rings” behind hero */
+    .hero-art{
+      position:absolute;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+    }
+    .hero-art svg{
+      position:absolute;
+      inset:-10% -10% auto -10%;
+      width:120%;
+      height:120%;
+      opacity:.9;
+      filter: drop-shadow(0 20px 80px rgba(0,0,0,.45));
+    }
+    /* Hero HUD cards */
+    .hud{
+      margin-top: 18px;
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .hud .hudCard{
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      padding: 10px 12px;
+      text-align:left;
+    }
+    .hud .k{
+      font-family: "Orbitron", system-ui;
+      letter-spacing:.06em;
+      font-size: .78rem;
+      color: rgba(255,255,255,.75);
+    }
+    .hud .v{
+      margin-top: 4px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      background: linear-gradient(90deg, var(--accentA), var(--accentB), var(--accentC));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color: transparent;
+    }
+    @media (max-width: 720px){
+      .hud{ grid-template-columns: 1fr; }
+    }
+
+    /* Section separators / premium spacing */
+    .sectionPad{
+      padding: 84px 0;
+      position:relative;
+      z-index:2;
+    }
+    .sectionHead{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+    .sectionHead h2{
+      margin:0;
+      letter-spacing:.04em;
+    }
+    .sectionKicker{
+      color: var(--muted);
+      font-size: .98rem;
+      max-width: 60ch;
+      margin: 0;
+    }
+
+    /* Feature grid */
+    .featureGrid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .feature{
+      grid-column: span 4;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.05));
+      box-shadow: 0 18px 70px rgba(0,0,0,.35);
+      padding: 18px 16px;
+      overflow:hidden;
+      position:relative;
+    }
+    .feature::before{
+      content:"";
+      position:absolute; inset:-30%;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(124,92,255,.22), transparent 40%),
+        radial-gradient(circle at 70% 40%, rgba(25,211,255,.18), transparent 38%),
+        radial-gradient(circle at 55% 75%, rgba(56,249,165,.14), transparent 42%);
+      filter: blur(18px);
+      opacity:.9;
+      transform: rotate(10deg);
+    }
+    .feature > *{ position:relative; z-index:2; }
+    .feature h3{
+      margin: 2px 0 6px;
+      font-size: 1.08rem;
+      letter-spacing:.02em;
+      color: rgba(255,255,255,.94);
+    }
+    .feature p{
+      margin:0;
+      color: rgba(255,255,255,.74);
+      font-size: .98rem;
+      line-height: 1.45;
+    }
+    .feature .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.20);
+      font-size:.78rem;
+      color: rgba(255,255,255,.78);
+      margin-bottom: 8px;
+    }
+    .dot{
+      width:8px; height:8px; border-radius:99px;
+      background: linear-gradient(90deg, var(--accentA), var(--accentB));
+      box-shadow: 0 0 18px rgba(124,92,255,.45);
+    }
+    @media (max-width: 980px){
+      .feature{ grid-column: span 6; }
+    }
+    @media (max-width: 640px){
+      .feature{ grid-column: span 12; }
+    }
+
+    /* Make your existing car section feel more “premium” without touching style.css */
+    #cars .cars-full-row h2{
+      background: linear-gradient(90deg, var(--accentA), var(--accentB));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color: transparent !important;
+    }
+
+    /* CTA band */
+    .ctaBand{
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(135deg, rgba(124,92,255,.18), rgba(25,211,255,.10), rgba(0,0,0,.20));
+      box-shadow: var(--shadow);
+      padding: 22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 16px;
+    }
+    .ctaBand h3{ margin:0; letter-spacing:.03em; }
+    .ctaBand p{ margin:6px 0 0; color: var(--muted); max-width: 62ch; }
+    .ctaBand .btn{
+      text-decoration:none;
+      display:inline-block;
+    }
+    @media (max-width: 780px){
+      .ctaBand{ flex-direction:column; align-items:flex-start; }
+    }
+
+    /* Make the footer feel “finished” */
+    footer.glass{
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 18px 70px rgba(0,0,0,.45);
+    }
+
+    /* Accessibility focus */
+    a:focus, button:focus{
+      outline: 2px solid rgba(25,211,255,.55);
+      outline-offset: 3px;
+    }
+  </style>
 </head>
+
 <body>
   <!-- Navbar -->
-  <nav class="navbar glass">
-    <div class="logo kinetic-logo">OVERDRIVE</div>
-    <button class="hamburger" aria-label="Open navigation">
+  <nav class="navbar glass" aria-label="Primary">
+    <div class="logo kinetic-logo" role="button" tabindex="0" aria-label="Overdrive Home">OVERDRIVE</div>
+
+    <button class="hamburger" aria-label="Open navigation" aria-expanded="false" aria-controls="navLinks">
       <span></span><span></span><span></span>
     </button>
-    <ul class="nav-links">
+
+    <ul class="nav-links" id="navLinks">
       <li><a href="#cars">Cars</a></li>
       <li><a href="#modshop">Mod Shop</a></li>
       <li><a href="#hazards">Hazards</a></li>
+      <li><a href="#download">Download</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
 
   <main>
-    <!-- Hero Section -->
-    <header class="hero" id="home">
-      <video autoplay loop muted playsinline preload="auto" class="hero-video" aria-hidden="true">
-        <source src="assets/showdowncover.mp4" type="video/mp4">
+    <!-- Hero -->
+    <header class="hero" id="home" aria-label="Overdrive hero">
+      <!-- Modern art layer -->
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="g1" cx="50%" cy="40%" r="60%">
+              <stop offset="0" stop-color="#7C5CFF" stop-opacity=".35"/>
+              <stop offset=".55" stop-color="#19D3FF" stop-opacity=".14"/>
+              <stop offset="1" stop-color="#070A12" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#19D3FF" stop-opacity=".35"/>
+              <stop offset="1" stop-color="#38F9A5" stop-opacity=".12"/>
+            </linearGradient>
+          </defs>
+
+          <circle cx="680" cy="330" r="260" fill="url(#g1)"/>
+          <circle cx="680" cy="330" r="310" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="2"/>
+          <circle cx="680" cy="330" r="380" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="2"/>
+          <path d="M120 590 C 260 420, 460 720, 620 560 C 760 420, 940 630, 1080 470"
+                fill="none" stroke="url(#g2)" stroke-width="6" stroke-linecap="round" opacity=".55"/>
+          <path d="M80 640 C 270 520, 450 760, 650 610 C 820 480, 940 700, 1120 520"
+                fill="none" stroke="rgba(124,92,255,.35)" stroke-width="3" stroke-linecap="round" opacity=".45"/>
+        </svg>
+      </div>
+
+      <!-- Video: keep your asset name, but improve loading strategy -->
+      <video
+        id="heroVideo"
+        class="hero-video"
+        autoplay
+        loop
+        muted
+        playsinline
+        preload="none"
+        poster="assets/hero-bg.jpg"
+        aria-hidden="true"
+      >
+        <!-- Sources injected by JS to reduce lag -->
       </video>
-      <div class="overlay glass fade-in">
+
+      <div class="overlay glass fade-in" role="region" aria-label="Overdrive intro">
         <h1 class="hero-title kinetic-text">OVERDRIVE</h1>
-        <p class="subtitle">Deck-build. Tune up. <span class="highlight-gradient">Take the lead.</span></p>
-        <a href="#cars" class="btn pulse hero-btn">Pick Your Car</a>
+
+        <p class="subtitle">
+          Deck-build. Tune up. <span class="highlight-gradient">Take the lead.</span>
+        </p>
+
+        <a href="#cars" class="btn pulse hero-btn" aria-label="Pick Your Car">Pick Your Car</a>
+
+        <div class="hud" aria-label="Game highlights">
+          <div class="hudCard">
+            <div class="k">PLAY STYLE</div>
+            <div class="v">Deck-Build + Race</div>
+          </div>
+          <div class="hudCard">
+            <div class="k">VIBE</div>
+            <div class="v">Neon Street</div>
+          </div>
+          <div class="hudCard">
+            <div class="k">GOAL</div>
+            <div class="v">Win the Circuit</div>
+          </div>
+        </div>
+
         <div class="down-chevron" aria-hidden="true"></div>
       </div>
+
       <div class="hero-wave" aria-hidden="true">
         <svg width="100%" height="60" viewBox="0 0 1920 60" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-          <path d="M0 60V20C480 80 1440 0 1920 60V0H0V60Z" fill="#181A22"/>
+          <path d="M0 60V20C480 80 1440 0 1920 60V0H0V60Z" fill="#0b0e18"/>
           <path d="M0 60V40C480 110 1440 20 1920 60V0H0V60Z" fill="url(#gradient1)"/>
           <defs>
             <linearGradient id="gradient1" x1="0" y1="0" x2="1920" y2="60" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#ff0050" stop-opacity="0.18"/>
-              <stop offset="1" stop-color="#f76b1c" stop-opacity="0.17"/>
+              <stop stop-color="#7C5CFF" stop-opacity="0.16"/>
+              <stop offset="0.55" stop-color="#19D3FF" stop-opacity="0.12"/>
+              <stop offset="1" stop-color="#38F9A5" stop-opacity="0.10"/>
             </linearGradient>
           </defs>
         </svg>
       </div>
     </header>
 
-    <!-- Cars Section -->
+    <!-- New “Why it’s cool” section (modern, sleek, still uses your fade-in JS) -->
+    <section class="sectionPad fade-in" aria-label="About Overdrive">
+      <div class="container">
+        <div class="sectionHead">
+          <h2 class="sectionTitle">Built for cinematic turns</h2>
+          <p class="sectionKicker">
+            A clean layout, premium motion, and “modern art” lighting — without clutter. Every race feels like a trailer.
+          </p>
+        </div>
+
+        <div class="featureGrid" role="list">
+          <article class="feature" role="listitem">
+            <div class="tag"><span class="dot"></span> TACTICAL</div>
+            <h3>Deck decisions that matter</h3>
+            <p>Build speed, drift, and boost lines that fit your car — then pivot when hazards hit.</p>
+          </article>
+          <article class="feature" role="listitem">
+            <div class="tag"><span class="dot"></span> MODULAR</div>
+            <h3>Mod shop progression</h3>
+            <p>Upgrade into a new identity each run: turbo, grip, braking, and risky high-payoff tech.</p>
+          </article>
+          <article class="feature" role="listitem">
+            <div class="tag"><span class="dot"></span> CHAOTIC GOOD</div>
+            <h3>Hazards & events</h3>
+            <p>Rain, trouble, and track surprises keep every lap dynamic — your plan must evolve.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cars Section (kept compatible with your current main.js + styles) -->
     <section id="cars" class="cars-bg-art fade-in" aria-label="Choose Your Car">
-      <div class="cars-art-bg"></div>
+      <div class="cars-art-bg" aria-hidden="true"></div>
       <div class="cars-full-row">
         <div class="car-grid-spacer" aria-hidden="true"></div>
+
         <h2>Pick Your Ride</h2>
+
         <div class="car-row-noscroll" tabindex="0" aria-label="Car selection, scrollable">
           <div class="car-card glass" data-car="Toyota GT86" data-img="assets/car-toyota-gt86.jpg">
             <img src="assets/car-toyota-gt86.jpg" alt="Toyota GT86 – Agile street racer" loading="lazy" />
             <h3>Toyota GT86</h3>
           </div>
+
           <div class="car-card glass" data-car="Nissan 370Z" data-img="assets/car-nissan-370z.jpg">
             <img src="assets/car-nissan-370z.jpg" alt="Nissan 370Z – Classic sports coupe" loading="lazy" />
             <h3>Nissan 370Z</h3>
           </div>
+
           <div class="car-card glass" data-car="Audi TT" data-img="assets/car-audi-tt.jpg">
             <img src="assets/car-audi-tt.jpg" alt="Audi TT – Sleek performance car" loading="lazy" />
             <h3>Audi TT</h3>
           </div>
+
           <div class="car-card glass" data-car="Ford Mustang GT" data-img="assets/car-fordmustang.jpg">
             <img src="assets/car-fordmustang.jpg" alt="Ford Mustang GT – American muscle" loading="lazy" />
             <h3>Ford Mustang GT</h3>
           </div>
+
           <div class="car-card glass" data-car="Mazda MX-5" data-img="assets/car-mazda-mx-5.png">
             <img src="assets/car-mazda-mx-5.png" alt="Mazda MX-5 – Lightweight roadster" loading="lazy" />
             <h3>Mazda MX-5</h3>
           </div>
         </div>
+
         <div class="car-grid-spacer" aria-hidden="true"></div>
       </div>
     </section>
 
-    <!-- Car Modal (hidden by default) -->
-    <div class="modal" id="car-modal" aria-modal="true" role="dialog">
+    <!-- Car Modal (unchanged selectors for your JS) -->
+    <div class="modal" id="car-modal" aria-modal="true" role="dialog" aria-label="Car details">
       <div class="modal-content glass">
         <button class="modal-close" aria-label="Close">&times;</button>
         <img src="" alt="" class="modal-img" />
@@ -91,20 +444,20 @@
       </div>
     </div>
 
-    <!-- Modshop Section -->
+    <!-- Modshop Section (kept) -->
     <section id="modshop" class="section-hero modshop-hero fade-in" aria-label="Mod Shop">
-      <video autoplay loop muted playsinline preload="auto" class="full-bg-video" aria-hidden="true">
+      <video autoplay loop muted playsinline preload="metadata" class="full-bg-video" aria-hidden="true">
         <source src="assets/neon-carloop.mp4" type="video/mp4">
       </video>
       <div class="section-hero-overlay glass">
         <h2>Mod Shop</h2>
-        <p>Upgrade your car with turbo kits, coilovers, brakes, and more. The Mod Shop is where champions are made.</p>
+        <p>Upgrade with turbo kits, coilovers, brakes, and more. The Mod Shop is where champions are made.</p>
       </div>
     </section>
 
-    <!-- Hazards Section -->
+    <!-- Hazards Section (kept) -->
     <section id="hazards" class="section-hero hazard-hero fade-in" aria-label="Hazards & Events">
-      <video autoplay loop muted playsinline preload="auto" class="full-bg-video" aria-hidden="true">
+      <video autoplay loop muted playsinline preload="metadata" class="full-bg-video" aria-hidden="true">
         <source src="assets/backandforth.mp4" type="video/mp4">
       </video>
       <div class="section-hero-overlay glass center-overlay">
@@ -114,19 +467,35 @@
       </div>
       <div class="divider-svg" aria-hidden="true">
         <svg viewBox="0 0 1920 80" width="100%" height="80" fill="none" preserveAspectRatio="none">
-          <path d="M0 80Q480 60 960 80T1920 80V0H0Z" fill="#191A22"/>
+          <path d="M0 80Q480 60 960 80T1920 80V0H0Z" fill="#0b0e18"/>
           <path d="M0 80Q480 80 960 90T1920 80V0H0Z" fill="url(#dividergrad3)"/>
           <defs>
             <linearGradient id="dividergrad3" x1="0" y1="0" x2="1920" y2="80" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#ff0050" stop-opacity="0.14"/>
-              <stop offset="1" stop-color="#f76b1c" stop-opacity="0.09"/>
+              <stop stop-color="#7C5CFF" stop-opacity="0.12"/>
+              <stop offset="0.6" stop-color="#19D3FF" stop-opacity="0.10"/>
+              <stop offset="1" stop-color="#38F9A5" stop-opacity="0.08"/>
             </linearGradient>
           </defs>
         </svg>
       </div>
     </section>
 
-    <!-- Poster Art Banner & CTA -->
+    <!-- Download / CTA (keeps your existing banner, but adds a premium band above it) -->
+    <section class="sectionPad fade-in" id="download" aria-label="Download">
+      <div class="container">
+        <div class="ctaBand">
+          <div>
+            <h3>Print & Play. Tonight.</h3>
+            <p>Grab the free kit and run a race in minutes. Clean rules, fast setup, cinematic outcomes.</p>
+          </div>
+          <a href="assets/Overdrive_PrintAndPlay.pdf" class="btn pulse big-btn" download aria-label="Download Print and Play kit">
+            Download Kit
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Your existing banner section kept (works with current CSS) -->
     <section class="section-banner poster-art-banner" aria-label="Try Overdrive Free">
       <img src="assets/hero-bg.jpg" alt="Overdrive board game poster art" class="poster-art-img" loading="lazy" />
       <div class="banner-cta glass">
@@ -138,16 +507,83 @@
 
   <!-- Footer -->
   <footer id="contact" class="glass" aria-label="Footer">
-    <div class="footer-social">
-      <!-- Put your real social links here -->
-      <a href="#" class="social-icon" aria-label="Instagram"><svg width="22" height="22"><circle cx="11" cy="11" r="10" fill="none" stroke="#ff0050" stroke-width="2"/><circle cx="11" cy="11" r="5" fill="none" stroke="#ff0050" stroke-width="2"/><circle cx="16" cy="6" r="1" fill="#ff0050"/></svg></a>
-      <a href="#" class="social-icon" aria-label="Discord"><svg width="22" height="22"><rect x="2" y="6" width="18" height="10" rx="5" fill="none" stroke="#ff0050" stroke-width="2"/><circle cx="7.5" cy="11" r="1.5" fill="#ff0050"/><circle cx="14.5" cy="11" r="1.5" fill="#ff0050"/></svg></a>
-      <!-- ... -->
+    <div class="footer-social" aria-label="Social links">
+      <a href="#" class="social-icon" aria-label="Instagram">
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+          <circle cx="11" cy="11" r="10" fill="none" stroke="#7C5CFF" stroke-width="2"/>
+          <circle cx="11" cy="11" r="5" fill="none" stroke="#19D3FF" stroke-width="2"/>
+          <circle cx="16" cy="6" r="1" fill="#38F9A5"/>
+        </svg>
+      </a>
+      <a href="#" class="social-icon" aria-label="Discord">
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+          <rect x="2" y="6" width="18" height="10" rx="5" fill="none" stroke="#19D3FF" stroke-width="2"/>
+          <circle cx="7.5" cy="11" r="1.5" fill="#7C5CFF"/>
+          <circle cx="14.5" cy="11" r="1.5" fill="#38F9A5"/>
+        </svg>
+      </a>
     </div>
-    <p>&copy; 2025 Overdrive. All rights reserved.</p>
+
+    <p>&copy; 2026 Overdrive. All rights reserved.</p>
     <p><a href="mailto:contact@overdrivegame.com">Contact Us</a></p>
   </footer>
 
+  <noscript>
+    <div style="padding:14px; text-align:center; background:#111; color:#fff;">
+      This site looks best with JavaScript enabled (animations + car modal).
+    </div>
+  </noscript>
+
+  <!-- ✅ Index-only video performance fix: lazy-inject sources + pause offscreen -->
+  <script>
+    (function () {
+      const hamburger = document.querySelector('.hamburger');
+      const navLinks = document.querySelector('.nav-links');
+      if (hamburger && navLinks) {
+        const syncExpanded = () => hamburger.setAttribute('aria-expanded', navLinks.classList.contains('open') ? 'true' : 'false');
+        hamburger.addEventListener('click', syncExpanded);
+      }
+
+      const video = document.getElementById("heroVideo");
+      if (!video) return;
+
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      const isDataSaver = conn && (conn.saveData || /2g/.test(conn.effectiveType || ""));
+      const isSmall = window.matchMedia("(max-width: 720px)").matches;
+
+      // If reduced motion / data saver / small screen: do not load the heavy hero video
+      if (prefersReduced || isDataSaver || isSmall) {
+        video.removeAttribute("autoplay");
+        video.pause();
+        return;
+      }
+
+      const injectSources = () => {
+        if (video.querySelector("source")) return;
+        const mp4 = document.createElement("source");
+        mp4.src = "assets/showdowncover.mp4";
+        mp4.type = "video/mp4";
+        video.appendChild(mp4);
+        video.load();
+      };
+
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            injectSources();
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        }
+      }, { threshold: 0.15 });
+
+      io.observe(video);
+    })();
+  </script>
+
+  <!-- Your existing JS (kept) -->
   <script src="main.js"></script>
 </body>
 </html>
