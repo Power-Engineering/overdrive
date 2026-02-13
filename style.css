@@ -213,7 +213,14 @@ a:hover{ text-decoration:none; }
   background: rgba(7,10,18,.80);
   isolation:isolate;
 }
-
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background: radial-gradient(900px 520px at 50% 40%, rgba(0,0,0,0.25), rgba(0,0,0,0.70));
+}
 .hero-video{
   position:absolute;
   inset:0;
@@ -221,11 +228,24 @@ a:hover{ text-decoration:none; }
   height:100%;
   object-fit: cover;
   z-index:0;
-  opacity:.98;
-  transform: translateZ(0) scale(1.01);
-  will-change: transform;
-  filter: none !important;
+
+  opacity: 1 !important;     /* CRITICAL */
+  transform: none !important; /* CRITICAL */
+  filter: none !important;    /* CRITICAL */
 }
+
+/* Auto performance downgrade */
+body.perf-low #fxParticles,
+body.perf-low .scanlines,
+body.perf-low .rings{
+  display: none !important;
+}
+
+/* During hero: keep FX off so hero video is perfect */
+body.hero-in-view #fxParticles{
+  display: none !important;
+}
+
 
 /* ✅ Hero FX overrides (important!) */
 #fxParticles{
