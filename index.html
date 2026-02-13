@@ -7,35 +7,24 @@
   <meta name="color-scheme" content="dark" />
 
   <title>OVERDRIVE — The Card Racing Game From The Future</title>
-  <meta name="description" content="OVERDRIVE is a high-intensity card racing game where upgrades, hazards, and drafting decide the winner. Futuristic, fast, and built to feel like a next-gen experience." />
+  <meta name="description" content="OVERDRIVE is a high-intensity card racing game where upgrades, hazards, and drafting decide the winner." />
 
-  <!-- Social -->
   <meta property="og:title" content="OVERDRIVE" />
-  <meta property="og:description" content="The card racing game from the future. Upgrade. Draft. Survive hazards. Win." />
+  <meta property="og:description" content="Upgrade. Draft. Survive hazards. Win." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="./assets/hero-poster.jpg" />
+  <meta property="og:image" content="./assets/hero-bg.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Performance: preconnect fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="./style.css?v=1" />
-
-  <!-- Hint the browser about hero video -->
+  <link rel="stylesheet" href="./style.css?v=9" />
   <link rel="preload" as="video" href="./assets/showdowncover.mp4" type="video/mp4" />
-
   <link rel="icon" href="./assets/favicon.ico" />
 </head>
 
 <body>
-  <!-- =========================
-       NAV
-  ========================== -->
   <nav class="navbar" aria-label="Primary">
     <a class="logo kinetic-logo" href="#top" aria-label="Overdrive Home">
       <span class="logoO" aria-hidden="true">O</span><span class="logoRest">VERDRIVE</span>
@@ -55,9 +44,6 @@
   </nav>
 
   <main id="top">
-    <!-- =========================
-         HERO (Clean. No heavy FX layers.)
-    ========================== -->
     <header class="hero" aria-label="Hero">
       <video
         id="heroVideo"
@@ -67,7 +53,7 @@
         loop
         playsinline
         preload="auto"
-        poster="./assets/hero-poster.jpg">
+        poster="./assets/hero-bg.jpg">
         <source src="./assets/showdowncover.mp4" type="video/mp4" />
       </video>
 
@@ -86,41 +72,24 @@
         </p>
 
         <div class="hero-actions fade-in">
-          <a class="btn hero-btn pulse" href="#cars" aria-label="Explore cars">
-            Explore Cars
-          </a>
-          <a class="btn btn-ghost" href="#about" aria-label="Learn about the game">
-            Learn More
-          </a>
+          <a class="btn hero-btn pulse" href="#cars" aria-label="Explore cars">Explore Cars</a>
+          <a class="btn btn-ghost" href="#about" aria-label="Learn about the game">Learn More</a>
         </div>
 
         <div class="hud fade-in" aria-label="Game highlights">
-          <div class="hudCard">
-            <div class="k">MODE</div>
-            <div class="v">RACE + DECK</div>
-          </div>
-          <div class="hudCard">
-            <div class="k">FEEL</div>
-            <div class="v">FAST / CLEAN</div>
-          </div>
-          <div class="hudCard">
-            <div class="k">GOAL</div>
-            <div class="v">OUTPLAY</div>
-          </div>
+          <div class="hudCard"><div class="k">MODE</div><div class="v">RACE + DECK</div></div>
+          <div class="hudCard"><div class="k">FEEL</div><div class="v">FAST / CLEAN</div></div>
+          <div class="hudCard"><div class="k">GOAL</div><div class="v">OUTPLAY</div></div>
         </div>
 
         <div class="down-chevron" aria-hidden="true"></div>
       </div>
 
-      <!-- Optional lightweight section divider (SVG only) -->
       <svg class="hero-wave" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
         <path d="M0,96 C240,160 480,0 720,64 C960,128 1200,48 1440,96 L1440,160 L0,160 Z" fill="rgba(0,0,0,0.40)"></path>
       </svg>
     </header>
 
-    <!-- =========================
-         ABOUT
-    ========================== -->
     <section id="about" class="sectionPad">
       <div class="container">
         <div class="sectionHead fade-in">
@@ -155,9 +124,6 @@
       </div>
     </section>
 
-    <!-- =========================
-         CARS
-    ========================== -->
     <section id="cars" class="cars-bg-art sectionPad" aria-label="Cars">
       <div class="cars-art-bg" aria-hidden="true"></div>
 
@@ -165,32 +131,32 @@
         <h2 class="fade-in">Choose Your Ride</h2>
 
         <div class="car-row-noscroll fade-in" aria-label="Car selection carousel">
-          <article class="car-card glass" data-car="Toyota GT86" data-img="./assets/cars/gt86.png">
-            <img src="./assets/cars/gt86.png" alt="Toyota GT86" loading="lazy" />
+          <article class="car-card glass" data-car="Toyota GT86" data-img="./assets/car-toyota-gt86.jpg">
+            <img src="./assets/car-toyota-gt86.jpg" alt="Toyota GT86" loading="lazy" />
             <h3>Toyota GT86</h3>
             <p class="muted">Lightweight / Precision</p>
           </article>
 
-          <article class="car-card glass" data-car="Nissan 370Z" data-img="./assets/cars/370z.png">
-            <img src="./assets/cars/370z.png" alt="Nissan 370Z" loading="lazy" />
+          <article class="car-card glass" data-car="Nissan 370Z" data-img="./assets/car-nissan-370z.jpg">
+            <img src="./assets/car-nissan-370z.jpg" alt="Nissan 370Z" loading="lazy" />
             <h3>Nissan 370Z</h3>
             <p class="muted">Balanced / Control</p>
           </article>
 
-          <article class="car-card glass" data-car="Audi TT" data-img="./assets/cars/auditt.png">
-            <img src="./assets/cars/auditt.png" alt="Audi TT" loading="lazy" />
+          <article class="car-card glass" data-car="Audi TT" data-img="./assets/car-audi-tt.jpg">
+            <img src="./assets/car-audi-tt.jpg" alt="Audi TT" loading="lazy" />
             <h3>Audi TT</h3>
             <p class="muted">Grip / Efficiency</p>
           </article>
 
-          <article class="car-card glass" data-car="Ford Mustang GT" data-img="./assets/cars/mustang.png">
-            <img src="./assets/cars/mustang.png" alt="Ford Mustang GT" loading="lazy" />
+          <article class="car-card glass" data-car="Ford Mustang GT" data-img="./assets/car-ford-mustang.jpg">
+            <img src="./assets/car-ford-mustang.jpg" alt="Ford Mustang GT" loading="lazy" />
             <h3>Mustang GT</h3>
             <p class="muted">Power / Pressure</p>
           </article>
 
-          <article class="car-card glass" data-car="Mazda MX-5" data-img="./assets/cars/mx5.png">
-            <img src="./assets/cars/mx5.png" alt="Mazda MX-5" loading="lazy" />
+          <article class="car-card glass" data-car="Mazda MX-5" data-img="./assets/car-mazda-mx5.jpg">
+            <img src="./assets/car-mazda-mx5.jpg" alt="Mazda MX-5" loading="lazy" />
             <h3>Mazda MX-5</h3>
             <p class="muted">Momentum / Draft</p>
           </article>
@@ -200,11 +166,8 @@
       </div>
     </section>
 
-    <!-- =========================
-         MOD SHOP (Section hero)
-    ========================== -->
     <section id="modshop" class="section-hero" aria-label="Mod Shop">
-      <video class="full-bg-video" autoplay muted loop playsinline preload="metadata" poster="./assets/modshop-poster.jpg">
+      <video class="full-bg-video" autoplay muted loop playsinline preload="metadata" poster="./assets/hero-bg.jpg" data-fallback-img="./assets/hero-bg.jpg">
         <source src="./assets/modshop.mp4" type="video/mp4" />
       </video>
 
@@ -222,11 +185,8 @@
       </svg>
     </section>
 
-    <!-- =========================
-         HAZARDS (Section hero)
-    ========================== -->
     <section id="hazards" class="section-hero" aria-label="Hazards">
-      <video class="full-bg-video" autoplay muted loop playsinline preload="metadata" poster="./assets/hazards-poster.jpg">
+      <video class="full-bg-video" autoplay muted loop playsinline preload="metadata" poster="./assets/hero-bg.jpg" data-fallback-img="./assets/hero-bg.jpg">
         <source src="./assets/hazards.mp4" type="video/mp4" />
       </video>
 
@@ -244,9 +204,6 @@
       </svg>
     </section>
 
-    <!-- =========================
-         CTA
-    ========================== -->
     <section id="cta" class="sectionPad">
       <div class="container">
         <div class="ctaBand glass fade-in">
@@ -254,16 +211,11 @@
             <h3>Ready to race the future?</h3>
             <p>Join the early wave. Playtest. Share feedback. Help shape OVERDRIVE into a legend.</p>
           </div>
-          <a class="btn big-btn" href="#" aria-label="Join playtest">
-            Join Playtest
-          </a>
+          <a class="btn big-btn" href="#cars" aria-label="Join playtest">Join Playtest</a>
         </div>
       </div>
     </section>
 
-    <!-- =========================
-         FOOTER
-    ========================== -->
     <footer class="glass">
       <div class="footer-social">
         <a class="social-icon" href="#" aria-label="Twitter / X">X</a>
@@ -275,9 +227,6 @@
     </footer>
   </main>
 
-  <!-- =========================
-       CAR MODAL
-  ========================== -->
   <div id="car-modal" class="modal" aria-hidden="true" role="dialog" aria-label="Car details">
     <div class="modal-content">
       <button class="modal-close" type="button" aria-label="Close">×</button>
@@ -287,12 +236,7 @@
     </div>
   </div>
 
-  <!-- JS -->
-  <script src="./main.js?v=1" defer></script>
-
-  <!-- tiny no-cost helper -->
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+  <script src="./main.js?v=9" defer></script>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 </body>
 </html>
