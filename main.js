@@ -4,6 +4,57 @@ document.addEventListener("DOMContentLoaded", () => {
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const finePointer = window.matchMedia("(pointer:fine)").matches;
+
+  /* =========================================================
+     Helpers
+  ========================================================= */
+  const slug = (s) =>
+    String(s || "")
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
+  const uniq = (arr) => Array.from(new Set(arr));
+
+  function imageExists(url) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url + (url.includes("?") ? "" : `?v=${Date.now()}`); // bypass cache for checking
+    });
+  }
+
+  async function pickFirstWorkingImage(urls) {
+    for (const u of urls) {
+      // eslint-disable-next-line no-await-in-loop
+      if (await imageExists(u)) return u;
+    }
+    return null;
+  }
+
+  function trySetVideoSources(videoEl, urls) {
+    if (!videoEl) return false;
+
+    // Clear existing sources
+    videoEl.pause();
+    videoEl.querySelectorAll("source").forEach(s => s.remove());
+
+    // Add candidates (mp4 first; browser will ignore unsupported)
+    urls.forEach(u => {
+      const s = document.createElement("source");
+      s.src = u;
+      if (u.endsWith(".webm")) s.type = "video/webm";
+      else if (u.endsWith(".mp4")) s.type = "video/mp4";
+      videoEl.appendChild(s);
+    });
+
+    // Force reload
+    try { videoEl.load(); } catch {}
+    return true;
+  }
 
   /* =========================================================
      MOBILE NAV
@@ -28,20 +79,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================================================
-     HERO + SECTION VIDEO GOVERNOR
-     Plays videos only when visible (smoother + saves CPU)
+     VIDEO GOVERNOR (smoothness)
   ========================================================= */
   const videos = $$("video");
-
   const videoObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach(entry => {
         const vid = entry.target;
-        if (entry.isIntersecting) {
-          vid.play().catch(() => {});
-        } else {
-          vid.pause();
-        }
+        if (entry.isIntersecting) vid.play().catch(() => {});
+        else vid.pause();
       });
     },
     { threshold: 0.35 }
@@ -54,52 +100,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =========================================================
-     VIDEO FALLBACK (fixes "other mp4 not working")
-     If modshop/hazards mp4 missing -> show poster/fallback bg
-  ========================================================= */
-  function applyVideoFallback(videoEl) {
-    if (!videoEl) return;
-
-    const fallbackImg = videoEl.getAttribute("data-fallback-img") || videoEl.getAttribute("poster");
-    const parent = videoEl.parentElement;
-
-    const useFallback = () => {
-      videoEl.pause();
-      videoEl.style.display = "none";
-      if (parent && fallbackImg) {
-        parent.style.backgroundImage = `url("${fallbackImg}")`;
-        parent.style.backgroundSize = "cover";
-        parent.style.backgroundPosition = "center";
-      }
-    };
-
-    // If the video can’t load
-    videoEl.addEventListener("error", useFallback, { once: true });
-
-    // If the first source 404s or fails decoding
-    const source = videoEl.querySelector("source");
-    if (source) {
-      source.addEventListener("error", useFallback, { once: true });
-    }
-  }
-
-  // Apply fallback to background section videos (not hero)
-  $$(".section-hero .full-bg-video").forEach(applyVideoFallback);
-
-  /* =========================================================
-     FADE-IN ANIMATIONS
+     FADE-IN
   ========================================================= */
   const fadeEls = $$(".fade-in");
-
   const fadeObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add("visible");
-      });
-    },
+    (entries) => entries.forEach(e => e.isIntersecting && e.target.classList.add("visible")),
     { threshold: 0.15 }
   );
-
   fadeEls.forEach(el => fadeObserver.observe(el));
 
   /* =========================================================
@@ -117,142 +124,237 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.setAttribute("aria-hidden", "true");
   }
 
-  $$(".car-card").forEach(card => {
-    // Inject sheen span if missing (so you don’t have to edit HTML)
-    if (!card.querySelector(".sheen")) {
-      const s = document.createElement("span");
-      s.className = "sheen";
-      s.setAttribute("aria-hidden", "true");
-      card.prepend(s);
-    }
-
-    card.addEventListener("click", () => {
-      if (!modal || !modalImg || !modalTitle || !modalDesc) return;
-
-      const name = card.dataset.car || "Car";
-      const img = card.dataset.img || "";
-
-      modalImg.src = img;
-      modalImg.alt = name;
-      modalTitle.textContent = name;
-      modalDesc.textContent =
-        `${name} is built for precision racing in OVERDRIVE. Choose upgrades carefully, control the draft, and time your boosts for maximum impact.`;
-
-      modal.classList.add("show");
-      modal.setAttribute("aria-hidden", "false");
-    });
-  });
-
   if (modalClose) modalClose.addEventListener("click", closeModal);
   if (modal) {
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) closeModal();
-    });
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeModal();
-    });
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+    window.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
   }
 
   /* =========================================================
-     CAR CARD TILT (desktop only, super light)
+     AUTO-FIX CAR IMAGES (Mustang/Mazda + all cars)
+     Your site currently tries /assets/cars/*.png and 404s. :contentReference[oaicite:1]{index=1}
+     This will try likely filenames and folders until it finds one.
   ========================================================= */
-  const finePointer = window.matchMedia("(pointer:fine)").matches;
+  async function fixCarImages() {
+    const cards = $$(".car-card");
+    for (const card of cards) {
+      const name = card.dataset.car || card.querySelector("h3")?.textContent || "car";
+      const s = slug(name);
 
+      const imgEl = card.querySelector("img");
+      if (!imgEl) continue;
+
+      // Inject sheen span (for your fancy effect) if missing
+      if (!card.querySelector(".sheen")) {
+        const sheen = document.createElement("span");
+        sheen.className = "sheen";
+        sheen.setAttribute("aria-hidden", "true");
+        card.prepend(sheen);
+      }
+
+      // Candidate paths (add more if your repo uses different naming)
+      const candidates = uniq([
+        `./assets/car-${s}.jpg`,
+        `./assets/car-${s}.png`,
+        `./assets/car-${s}.webp`,
+        `./assets/${s}.jpg`,
+        `./assets/${s}.png`,
+        `./assets/${s}.webp`,
+
+        // common variations
+        `./assets/car-${s.replace("-gt", "")}.jpg`,
+        `./assets/car-${s.replace("-gt", "")}.png`,
+        `./assets/car-${s.replace("ford-", "")}.jpg`,
+        `./assets/car-${s.replace("ford-", "")}.png`,
+        `./assets/car-${s.replace("mazda-", "")}.jpg`,
+        `./assets/car-${s.replace("mazda-", "")}.png`,
+
+        // if you ever add a folder later
+        `./assets/cars/${s}.jpg`,
+        `./assets/cars/${s}.png`,
+        `./assets/cars/${s}.webp`,
+      ]);
+
+      // If it already has a working image, keep it
+      const current = imgEl.getAttribute("src");
+      if (current && current !== "./assets/hero-bg.jpg") {
+        // best effort: leave
+        continue;
+      }
+
+      // eslint-disable-next-line no-await-in-loop
+      const found = await pickFirstWorkingImage(candidates);
+      if (found) {
+        imgEl.src = found;
+        card.dataset.img = found; // modal will use this
+      } else {
+        // fallback stays hero-bg.jpg (no broken image)
+        card.dataset.img = "./assets/hero-bg.jpg";
+      }
+
+      // Modal click
+      card.addEventListener("click", () => {
+        if (!modal || !modalImg || !modalTitle || !modalDesc) return;
+
+        const img = card.dataset.img || imgEl.src || "./assets/hero-bg.jpg";
+
+        modalImg.src = img;
+        modalImg.alt = name;
+        modalTitle.textContent = name;
+        modalDesc.textContent =
+          `${name} is built for precision racing in OVERDRIVE. Choose upgrades carefully, control the draft, and time your boosts for maximum impact.`;
+
+        modal.classList.add("show");
+        modal.setAttribute("aria-hidden", "false");
+      }, { once: true });
+    }
+  }
+
+  fixCarImages().catch(() => {});
+
+  /* =========================================================
+     CAR CARD TILT (desktop only)
+  ========================================================= */
   if (!prefersReduced && finePointer) {
     const cards = $$(".car-card.glass");
-
     let raf = 0;
-    let activeCard = null;
-    let lastX = 0;
-    let lastY = 0;
+    let active = null;
+    let lastX = 0, lastY = 0;
 
     function updateTilt() {
       raf = 0;
-      if (!activeCard) return;
-
-      const rect = activeCard.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-
-      const dx = (lastX - cx) / rect.width;   // -0.5..0.5
-      const dy = (lastY - cy) / rect.height;
-
-      const max = 8; // degrees
-      const ry = dx * max;
-      const rx = -dy * max;
-
-      activeCard.style.setProperty("--rx", `${rx.toFixed(2)}deg`);
-      activeCard.style.setProperty("--ry", `${ry.toFixed(2)}deg`);
+      if (!active) return;
+      const r = active.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const dx = (lastX - cx) / r.width;
+      const dy = (lastY - cy) / r.height;
+      const max = 8;
+      active.style.setProperty("--ry", `${(dx * max).toFixed(2)}deg`);
+      active.style.setProperty("--rx", `${(-dy * max).toFixed(2)}deg`);
     }
 
     cards.forEach(card => {
-      card.addEventListener("pointerenter", () => {
-        activeCard = card;
-      });
-
+      card.addEventListener("pointerenter", () => { active = card; });
       card.addEventListener("pointermove", (e) => {
         lastX = e.clientX;
         lastY = e.clientY;
         if (!raf) raf = requestAnimationFrame(updateTilt);
       });
-
       card.addEventListener("pointerleave", () => {
         card.style.setProperty("--rx", "0deg");
         card.style.setProperty("--ry", "0deg");
-        if (activeCard === card) activeCard = null;
+        if (active === card) active = null;
       });
     });
   }
 
   /* =========================================================
-     PURPLE BUBBLES FROM THE "O"
-     Lightweight, capped FPS, no layout thrashing
+     AUTO-FIX SECTION VIDEOS (modshop/hazards)
+     Tries common filenames; if none work -> poster background.
+  ========================================================= */
+  function fallbackToImage(videoEl) {
+    const fallbackImg = videoEl.getAttribute("data-fallback-img") || videoEl.getAttribute("poster");
+    const parent = videoEl.parentElement;
+    videoEl.pause();
+    videoEl.style.display = "none";
+    if (parent && fallbackImg) {
+      parent.style.backgroundImage = `url("${fallbackImg}")`;
+      parent.style.backgroundSize = "cover";
+      parent.style.backgroundPosition = "center";
+    }
+  }
+
+  async function fixSectionVideo(sectionId, baseName) {
+    const section = document.getElementById(sectionId);
+    const videoEl = section?.querySelector("video");
+    if (!videoEl) return;
+
+    // Candidate files (add more if you rename files later)
+    const candidates = uniq([
+      `./assets/${baseName}.mp4`,
+      `./assets/${baseName}.webm`,
+      `./assets/${baseName}-bg.mp4`,
+      `./assets/${baseName}-bg.webm`,
+      `./assets/${baseName}cover.mp4`,
+      `./assets/${baseName}cover.webm`,
+      `./assets/${baseName}-cover.mp4`,
+      `./assets/${baseName}-cover.webm`,
+      `./assets/${sectionId}.mp4`,
+      `./assets/${sectionId}.webm`,
+    ]);
+
+    // Check by attempting to load first frame via fetch HEAD-like (Image trick won’t work for video).
+    // We'll "optimistically set sources" then detect if it errors quickly.
+    trySetVideoSources(videoEl, candidates);
+
+    let settled = false;
+    const onCanPlay = () => { settled = true; cleanup(); };
+    const onError = () => { settled = true; cleanup(); fallbackToImage(videoEl); };
+
+    const cleanup = () => {
+      videoEl.removeEventListener("canplay", onCanPlay);
+      videoEl.removeEventListener("error", onError);
+    };
+
+    videoEl.addEventListener("canplay", onCanPlay, { once: true });
+    videoEl.addEventListener("error", onError, { once: true });
+
+    // If nothing happens in 2s, assume fail and fallback
+    setTimeout(() => {
+      if (!settled) {
+        cleanup();
+        fallbackToImage(videoEl);
+      }
+    }, 2000);
+  }
+
+  fixSectionVideo("modshop", "modshop");
+  fixSectionVideo("hazards", "hazards");
+
+  /* =========================================================
+     PURPLE BUBBLES FROM THE "O" (logo)
   ========================================================= */
   if (!prefersReduced) {
     const logo = $(".logo");
     const logoO = $(".logoO");
-
     if (logo && logoO) {
       const canvas = document.createElement("canvas");
       canvas.className = "logo-bubbles";
       logo.appendChild(canvas);
 
       const ctx = canvas.getContext("2d", { alpha: true });
-
       let w = 0, h = 0;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
       function resize() {
-        const rect = logo.getBoundingClientRect();
-        w = rect.width + 40;
-        h = rect.height + 40;
-
+        const r = logo.getBoundingClientRect();
+        w = r.width + 40;
+        h = r.height + 40;
         canvas.width = w * dpr;
         canvas.height = h * dpr;
-        canvas.style.width = w + "px";
-        canvas.style.height = h + "px";
-
+        canvas.style.width = `${w}px`;
+        canvas.style.height = `${h}px`;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
 
       resize();
-      window.addEventListener("resize", resize);
+      window.addEventListener("resize", resize, { passive: true });
 
       const bubbles = [];
-      const MAX = 48;
+      const MAX = 52;
+      let last = 0;
 
       function emit() {
         if (bubbles.length > MAX) return;
 
-        const oRect = logoO.getBoundingClientRect();
-        const lRect = logo.getBoundingClientRect();
-
-        const x = oRect.left - lRect.left + oRect.width * 0.55;
-        const y = oRect.top - lRect.top + oRect.height * 0.72;
+        const o = logoO.getBoundingClientRect();
+        const l = logo.getBoundingClientRect();
+        const x = (o.left - l.left) + o.width * 0.55;
+        const y = (o.top - l.top) + o.height * 0.72;
 
         bubbles.push({
-          x,
-          y,
+          x, y,
           r: Math.random() * 3 + 1.6,
           vx: (Math.random() - 0.5) * 0.45,
           vy: -1.15 - Math.random() * 0.9,
@@ -261,20 +363,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      let lastFrame = 0;
-      const FPS = 30;
+      function frame(t) {
+        requestAnimationFrame(frame);
+        // 30fps cap
+        if (t - last < 33) return;
+        last = t;
 
-      function animate(t) {
-        requestAnimationFrame(animate);
-        if (t - lastFrame < 1000 / FPS) return;
-        lastFrame = t;
-
-        const rect = logo.getBoundingClientRect();
-        if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+        const r = logo.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight) return;
 
         ctx.clearRect(0, 0, w, h);
-
-        // slightly more active, still capped by MAX
         if (Math.random() < 0.45) emit();
 
         for (let i = bubbles.length - 1; i >= 0; i--) {
@@ -292,8 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (b.life <= 0) bubbles.splice(i, 1);
         }
       }
-
-      requestAnimationFrame(animate);
+      requestAnimationFrame(frame);
     }
   }
 
