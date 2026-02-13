@@ -221,17 +221,18 @@ a:hover{ text-decoration:none; }
   pointer-events:none;
   background: radial-gradient(900px 520px at 50% 40%, rgba(0,0,0,0.25), rgba(0,0,0,0.70));
 }
-.hero-video{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  z-index:0;
+  z-index: 0;
 
-  opacity: 1 !important;     /* CRITICAL */
-  transform: none !important; /* CRITICAL */
-  filter: none !important;    /* CRITICAL */
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  will-change: auto !important;
 }
 
 /* Auto performance downgrade */
@@ -267,19 +268,10 @@ body.hero-in-view #fxParticles{
   border-color: rgba(255,255,255,.12);
 }
 
-.overlay.glass{
-  position:relative;
-  z-index:2;
-  text-align:center;
-  padding: 3.2rem 2.0rem 2.0rem 2.0rem;
-  border-radius: var(--radius2);
-  margin: 0 2vw;
-  max-width: 780px;
-  border: 1px solid rgba(255,255,255,.14);
-  box-shadow: var(--shadow);
-
-  backdrop-filter: blur(10px) saturate(1.06);
-  -webkit-backdrop-filter: blur(10px) saturate(1.06);
+.hero .overlay.glass {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(10,12,20,0.65) !important;
 }
 
 .hero-title{
@@ -831,4 +823,18 @@ footer a{
 
 @media (prefers-reduced-motion: reduce){
   *{ animation:none !important; transition:none !important; }
+}
+/* =========================================
+   REMOVE HERO CIRCLE / RINGS COMPLETELY
+   ========================================= */
+
+.rings,
+.ring,
+.ring.r1,
+.ring.r2,
+.ring.r3 {
+  display: none !important;
+}
+#fxParticles {
+  display: none !important;
 }
