@@ -1,6 +1,6 @@
 /* =========================================
-   OVERDRIVE main.js — Cinematic Motion Layer
-   Full replacement
+   OVERDRIVE main.js — HERO LAG FIX (Full Replacement)
+   Goal: smooth hero video + mobile fixes preserved
    ========================================= */
 
 (() => {
@@ -8,16 +8,15 @@
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const lerp = (a, b, t) => a + (b - a) * t;
 
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const hoverCapable = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-  // ----------------------------
+  // ============================
   // 1) Mobile Nav (hamburger)
-  // ----------------------------
+  // ============================
   const hamburger = $(".hamburger");
   const navLinks = $(".nav-links");
 
@@ -32,19 +31,13 @@
     if (!hamburger.hasAttribute("aria-expanded")) hamburger.setAttribute("aria-expanded", "false");
     if (navLinks.id) hamburger.setAttribute("aria-controls", navLinks.id);
 
-    hamburger.addEventListener("click", () => {
-      const open = !navLinks.classList.contains("open");
-      setNavOpen(open);
-    });
-
+    hamburger.addEventListener("click", () => setNavOpen(!navLinks.classList.contains("open")));
     navLinks.addEventListener("click", (e) => {
       if (e.target.closest("a")) setNavOpen(false);
     });
-
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") setNavOpen(false);
     });
-
     document.addEventListener("click", (e) => {
       if (!navLinks.classList.contains("open")) return;
       const inside = navLinks.contains(e.target) || hamburger.contains(e.target);
@@ -52,15 +45,14 @@
     });
   }
 
-  // ----------------------------
-  // 2) Kinetic Text (hero title)
-  // ----------------------------
+  // ============================
+  // 2) Kinetic Text
+  // ============================
   const kinetic = $(".kinetic-text");
   if (kinetic && !kinetic.dataset.kineticDone) {
     kinetic.dataset.kineticDone = "1";
     const text = kinetic.textContent || "";
     kinetic.textContent = "";
-
     [...text].forEach((ch, i) => {
       const span = document.createElement("span");
       span.textContent = ch;
@@ -69,7 +61,6 @@
     });
   }
 
-  // Logo click micro-interaction
   const kineticLogo = $(".kinetic-logo");
   if (kineticLogo) {
     const fire = () => {
@@ -83,9 +74,9 @@
     });
   }
 
-  // ----------------------------
-  // 3) Scroll Reveal (fade-in)
-  // ----------------------------
+  // ============================
+  // 3) Fade-in on scroll
+  // ============================
   const fadeEls = $$(".fade-in");
   if (fadeEls.length) {
     if (prefersReduced) {
@@ -105,30 +96,20 @@
     }
   }
 
-  // ----------------------------
-  // 4) Hero video play/pause management (smoothness)
-  // ----------------------------
+  // ============================
+  // 4) Hero video management
+  // ============================
+  const hero = $(".hero");
   const heroVideo = $("#heroVideo");
-  if (heroVideo) {
-    const tryPlay = () => heroVideo.play().catch(() => {});
-    window.addEventListener("load", tryPlay, { once: true });
 
-    // Pause when offscreen to reduce stutter later
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) tryPlay();
-          else heroVideo.pause();
-        }
-      },
-      { threshold: 0.15 }
-    );
-    io.observe(heroVideo);
+  const tryPlay = () => heroVideo?.play?.().catch(() => {});
+  if (heroVideo) {
+    window.addEventListener("load", tryPlay, { once: true });
   }
 
-  // ----------------------------
+  // ============================
   // 5) Hero button sparkle coords
-  // ----------------------------
+  // ============================
   const heroBtn = $(".hero-btn");
   if (heroBtn) {
     heroBtn.addEventListener("pointerdown", (e) => {
@@ -140,9 +121,9 @@
     });
   }
 
-  // ----------------------------
+  // ============================
   // 6) Car Modal
-  // ----------------------------
+  // ============================
   const modal = $("#car-modal");
   const modalClose = $(".modal-close", modal || document);
   const modalImg = $(".modal-img", modal || document);
@@ -161,15 +142,8 @@
   const openModal = (card) => {
     if (!modal) return;
 
-    const carName =
-      card?.dataset?.car ||
-      card?.querySelector("h3")?.textContent?.trim() ||
-      "Car";
-
-    const imgSrc =
-      card?.dataset?.img ||
-      card?.querySelector("img")?.getAttribute("src") ||
-      "";
+    const carName = card?.dataset?.car || card?.querySelector("h3")?.textContent?.trim() || "Car";
+    const imgSrc = card?.dataset?.img || card?.querySelector("img")?.getAttribute("src") || "";
 
     if (modalTitle) modalTitle.textContent = carName;
     if (modalDesc) modalDesc.textContent = carDescriptions[carName] || "Choose your upgrades. Adapt to hazards. Take the lead.";
@@ -202,144 +176,221 @@
   });
 
   modalClose?.addEventListener("click", closeModal);
-
   if (modal) {
     modal.addEventListener("click", (e) => {
       const content = $(".modal-content", modal);
       if (content && !content.contains(e.target)) closeModal();
     });
   }
-
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && modal?.classList.contains("show")) closeModal();
   });
 
-  // ----------------------------
-  // 7) Premium Tilt Hover (lightweight)
-  // ----------------------------
+  // ============================
+  // 7) Tilt hover (desktop only)
+  // ============================
   if (!prefersReduced && hoverCapable) {
     carCards.forEach((card) => {
       let raf = 0;
-
       const onMove = (e) => {
         if (raf) cancelAnimationFrame(raf);
-
         raf = requestAnimationFrame(() => {
           const rect = card.getBoundingClientRect();
           const px = (e.clientX - rect.left) / rect.width;
           const py = (e.clientY - rect.top) / rect.height;
-
           const rx = clamp((0.5 - py) * 10, -8, 8);
           const ry = clamp((px - 0.5) * 12, -10, 10);
-
           card.style.transform = `translateY(-4px) rotateX(${rx}deg) rotateY(${ry}deg)`;
         });
       };
-
       const reset = () => {
         if (raf) cancelAnimationFrame(raf);
         card.style.transform = "";
       };
-
       card.addEventListener("mousemove", onMove);
       card.addEventListener("mouseleave", reset);
       card.addEventListener("blur", reset);
     });
   }
 
-  // ----------------------------
-  // 8) Cinematic Rings + Parallax (WOW factor)
-  // ----------------------------
+  // =========================================================
+  // 8) HERO FX PERFORMANCE SYSTEM (Particles + Rings)
+  // =========================================================
+
   const ring1 = $(".ring.r1");
   const ring2 = $(".ring.r2");
   const ring3 = $(".ring.r3");
+  const canvas = $("#fxParticles");
 
-  // We’ll “nudge” transforms on top of CSS spin animations with translate offsets only,
-  // so the animation stays cheap (no heavy 3D).
-  let mouseX = 0, mouseY = 0;
-  let targetX = 0, targetY = 0;
+  // Helper: detect low-power / should-throttle
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const saveData = !!conn?.saveData;
+  const effectiveType = conn?.effectiveType || "";
+  const lowNetwork = /2g/.test(effectiveType);
+  const smallScreen = window.matchMedia("(max-width: 720px)").matches;
 
-  if (!prefersReduced && (ring1 || ring2 || ring3)) {
-    window.addEventListener("mousemove", (e) => {
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      targetX = (e.clientX - cx) / cx; // -1..1
-      targetY = (e.clientY - cy) / cy; // -1..1
-    }, { passive: true });
+  // On mobile or reduced-motion, kill FX entirely (CSS also hides them, but we stop JS too)
+  const fxDisabledHard = prefersReduced || saveData || lowNetwork || smallScreen;
 
-    const onScroll = () => {
-      // scroll progress 0..1 through first viewport
-      const s = clamp(window.scrollY / Math.max(1, window.innerHeight), 0, 1);
-
-      // higher = more movement near top, settles as you scroll down
-      const strength = 1 - s;
-
-      const x1 = mouseX * 16 * strength;
-      const y1 = mouseY * 10 * strength;
-      const x2 = mouseX * -10 * strength;
-      const y2 = mouseY * 14 * strength;
-      const x3 = mouseX * 8 * strength;
-      const y3 = mouseY * -8 * strength;
-
-      if (ring1) ring1.style.translate = `${x1}px ${y1}px`;
-      if (ring2) ring2.style.translate = `${x2}px ${y2}px`;
-      if (ring3) ring3.style.translate = `${x3}px ${y3}px`;
-    };
-
-    const tick = () => {
-      // Smooth mouse easing
-      mouseX = lerp(mouseX, targetX, 0.08);
-      mouseY = lerp(mouseY, targetY, 0.08);
-
-      onScroll();
-      requestAnimationFrame(tick);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    tick();
+  // Pause FX when hero not visible
+  let heroVisible = true;
+  if (hero) {
+    const heroIO = new IntersectionObserver((entries) => {
+      for (const e of entries) heroVisible = e.isIntersecting;
+      // Pause video when not visible too
+      if (heroVideo) {
+        if (heroVisible) tryPlay();
+        else heroVideo.pause();
+      }
+    }, { threshold: 0.12 });
+    heroIO.observe(hero);
   }
 
   // ----------------------------
-  // 9) Particle Canvas (fast “premium dust”)
+  // 8A) Rings parallax (cheap)
   // ----------------------------
-  const canvas = $("#fxParticles");
-  if (!prefersReduced && canvas) {
+  let mouseX = 0, mouseY = 0;
+  let targetX = 0, targetY = 0;
+
+  // We’ll only run ring/parallax updates at ~30fps, not 60fps
+  let ringLast = 0;
+
+  if (!fxDisabledHard && (ring1 || ring2 || ring3)) {
+    window.addEventListener("mousemove", (e) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      targetX = (e.clientX - cx) / cx;
+      targetY = (e.clientY - cy) / cy;
+    }, { passive: true });
+
+    const ringTick = (ts) => {
+      if (!heroVisible) return requestAnimationFrame(ringTick); // still keep loop alive but do nothing
+      if (ts - ringLast < 33) return requestAnimationFrame(ringTick); // ~30fps cap
+      ringLast = ts;
+
+      mouseX = lerp(mouseX, targetX, 0.08);
+      mouseY = lerp(mouseY, targetY, 0.08);
+
+      // Reduce strength near top where video plays (lower compositing cost)
+      const s = clamp(window.scrollY / Math.max(1, window.innerHeight), 0, 1);
+      const strength = 0.65 * (1 - s) + 0.10; // 0.75 -> 0.10
+
+      if (ring1) ring1.style.translate = `${(mouseX * 12 * strength).toFixed(2)}px ${(mouseY * 8 * strength).toFixed(2)}px`;
+      if (ring2) ring2.style.translate = `${(mouseX * -9 * strength).toFixed(2)}px ${(mouseY * 10 * strength).toFixed(2)}px`;
+      if (ring3) ring3.style.translate = `${(mouseX * 7 * strength).toFixed(2)}px ${(mouseY * -7 * strength).toFixed(2)}px`;
+
+      requestAnimationFrame(ringTick);
+    };
+
+    requestAnimationFrame(ringTick);
+  }
+
+  // ----------------------------
+  // 8B) Particles — 30fps + dynamic quality scaling
+  // ----------------------------
+  if (!fxDisabledHard && canvas) {
     const ctx = canvas.getContext("2d", { alpha: true });
+
     let w = 0, h = 0;
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
 
-    const particles = [];
-    const COUNT = 45;
-    let running = true;
+    // Dynamic resolution: start at 1.0 DPR for cheap draw
+    // If you have a monster GPU you can raise it later, but 1.0 is smooth.
+    let dpr = 1;
 
-    const resize = () => {
+    // Dynamic particle count
+    let targetCount = 55;
+    let particles = [];
+
+    // 30fps cap
+    const fpsCapMs = 33;
+    let lastFrameTs = 0;
+
+    // FPS monitor
+    let fpsSamples = [];
+    let lastFpsCheck = performance.now();
+
+    const rand = (a, b) => a + Math.random() * (b - a);
+
+    function resize() {
       const rect = canvas.getBoundingClientRect();
       w = Math.max(1, Math.floor(rect.width));
       h = Math.max(1, Math.floor(rect.height));
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
+    }
 
-    const rand = (a, b) => a + Math.random() * (b - a);
-
-    const init = () => {
-      particles.length = 0;
-      for (let i = 0; i < COUNT; i++) {
-        particles.push({
+    function makeParticles(count) {
+      const arr = [];
+      for (let i = 0; i < count; i++) {
+        arr.push({
           x: rand(0, w),
           y: rand(0, h),
-          r: rand(0.6, 2.1),
-          vx: rand(-0.18, 0.18),
-          vy: rand(-0.12, 0.22),
-          a: rand(0.14, 0.52),
-          hue: rand(190, 280)
+          r: rand(0.7, 1.8),
+          vx: rand(-0.14, 0.14),
+          vy: rand(-0.10, 0.18),
+          a: rand(0.10, 0.40),
+          hue: rand(195, 280)
         });
       }
-    };
+      return arr;
+    }
 
-    const draw = () => {
-      if (!running) return;
+    function ensureCount() {
+      if (particles.length === targetCount) return;
+      particles = makeParticles(targetCount);
+    }
+
+    // Quality manager: if FPS low, reduce count + resolution
+    function adjustQuality(avgFps) {
+      // If hero video is visible and we're struggling, prioritize video smoothness:
+      // reduce particles hard.
+      if (avgFps < 50) {
+        targetCount = Math.max(20, Math.floor(targetCount * 0.80));
+        dpr = 1; // keep cheap
+      }
+      if (avgFps < 40) {
+        targetCount = Math.max(14, Math.floor(targetCount * 0.75));
+        dpr = 1;
+      }
+      if (avgFps > 57 && targetCount < 60) {
+        // cautiously scale up if stable
+        targetCount = Math.min(60, targetCount + 2);
+      }
+      ensureCount();
+    }
+
+    // Optional: if you want MAX video smoothness, disable particles while hero is in view.
+    // Change to false if you want particles always.
+    const DISABLE_PARTICLES_WHILE_HERO_VISIBLE = true;
+
+    function draw(ts) {
+      requestAnimationFrame(draw);
+
+      if (!heroVisible) return; // offscreen: do nothing
+      if (DISABLE_PARTICLES_WHILE_HERO_VISIBLE && heroVideo) {
+        // Video exists and hero is visible: skip particle drawing entirely for max smoothness.
+        // (You still get rings/scanlines.)
+        return;
+      }
+
+      if (ts - lastFrameTs < fpsCapMs) return;
+      const dt = ts - lastFrameTs;
+      lastFrameTs = ts;
+
+      // FPS samples
+      const fps = 1000 / Math.max(1, dt);
+      fpsSamples.push(fps);
+
+      // Periodic quality adjustment (every ~1.2s)
+      const now = ts;
+      if (now - lastFpsCheck > 1200) {
+        const avg = fpsSamples.reduce((a, b) => a + b, 0) / Math.max(1, fpsSamples.length);
+        fpsSamples = [];
+        lastFpsCheck = now;
+        adjustQuality(avg);
+      }
+
       ctx.clearRect(0, 0, w, h);
 
       for (const p of particles) {
@@ -356,32 +407,18 @@
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       }
-
-      requestAnimationFrame(draw);
-    };
-
-    // Pause particles when hero not visible (performance)
-    const hero = $(".hero");
-    if (hero) {
-      const io = new IntersectionObserver(
-        (entries) => {
-          for (const e of entries) {
-            running = e.isIntersecting;
-            if (running) requestAnimationFrame(draw);
-          }
-        },
-        { threshold: 0.12 }
-      );
-      io.observe(hero);
     }
 
+    // Init
     resize();
-    init();
-    requestAnimationFrame(draw);
+    particles = makeParticles(targetCount);
 
     window.addEventListener("resize", () => {
       resize();
-      init();
+      particles = makeParticles(targetCount);
     }, { passive: true });
+
+    requestAnimationFrame(draw);
   }
+
 })();
