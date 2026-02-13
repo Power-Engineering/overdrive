@@ -9,17 +9,11 @@
   <title>OVERDRIVE — The Card Racing Game From The Future</title>
   <meta name="description" content="OVERDRIVE is a high-intensity card racing game where upgrades, hazards, and drafting decide the winner." />
 
-  <meta property="og:title" content="OVERDRIVE" />
-  <meta property="og:description" content="Upgrade. Draft. Survive hazards. Win." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="./assets/hero-bg.jpg" />
-  <meta name="twitter:card" content="summary_large_image" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="./style.css?v=9" />
+  <link rel="stylesheet" href="./style.css?v=10" />
   <link rel="preload" as="video" href="./assets/showdowncover.mp4" type="video/mp4" />
   <link rel="icon" href="./assets/favicon.ico" />
 </head>
@@ -131,32 +125,32 @@
         <h2 class="fade-in">Choose Your Ride</h2>
 
         <div class="car-row-noscroll fade-in" aria-label="Car selection carousel">
-          <article class="car-card glass" data-car="Toyota GT86" data-img="./assets/car-toyota-gt86.jpg">
-            <img src="./assets/car-toyota-gt86.jpg" alt="Toyota GT86" loading="lazy" />
+          <article class="car-card glass" data-car="Toyota GT86">
+            <img src="./assets/hero-bg.jpg" alt="Toyota GT86" loading="lazy" />
             <h3>Toyota GT86</h3>
             <p class="muted">Lightweight / Precision</p>
           </article>
 
-          <article class="car-card glass" data-car="Nissan 370Z" data-img="./assets/car-nissan-370z.jpg">
-            <img src="./assets/car-nissan-370z.jpg" alt="Nissan 370Z" loading="lazy" />
+          <article class="car-card glass" data-car="Nissan 370Z">
+            <img src="./assets/hero-bg.jpg" alt="Nissan 370Z" loading="lazy" />
             <h3>Nissan 370Z</h3>
             <p class="muted">Balanced / Control</p>
           </article>
 
-          <article class="car-card glass" data-car="Audi TT" data-img="./assets/car-audi-tt.jpg">
-            <img src="./assets/car-audi-tt.jpg" alt="Audi TT" loading="lazy" />
+          <article class="car-card glass" data-car="Audi TT">
+            <img src="./assets/hero-bg.jpg" alt="Audi TT" loading="lazy" />
             <h3>Audi TT</h3>
             <p class="muted">Grip / Efficiency</p>
           </article>
 
-          <article class="car-card glass" data-car="Ford Mustang GT" data-img="./assets/car-ford-mustang.jpg">
-            <img src="./assets/car-ford-mustang.jpg" alt="Ford Mustang GT" loading="lazy" />
+          <article class="car-card glass" data-car="Ford Mustang GT">
+            <img src="./assets/hero-bg.jpg" alt="Ford Mustang GT" loading="lazy" />
             <h3>Mustang GT</h3>
             <p class="muted">Power / Pressure</p>
           </article>
 
-          <article class="car-card glass" data-car="Mazda MX-5" data-img="./assets/car-mazda-mx5.jpg">
-            <img src="./assets/car-mazda-mx5.jpg" alt="Mazda MX-5" loading="lazy" />
+          <article class="car-card glass" data-car="Mazda MX-5">
+            <img src="./assets/hero-bg.jpg" alt="Mazda MX-5" loading="lazy" />
             <h3>Mazda MX-5</h3>
             <p class="muted">Momentum / Draft</p>
           </article>
@@ -168,7 +162,7 @@
 
     <section id="modshop" class="section-hero" aria-label="Mod Shop">
       <video class="full-bg-video" autoplay muted loop playsinline preload="metadata" poster="./assets/hero-bg.jpg" data-fallback-img="./assets/hero-bg.jpg">
-        <source src="./assets/neoncarupgraded86.mp4" type="video/mp4" />
+        <source src="./assets/modshop.mp4" type="video/mp4" />
       </video>
 
       <div class="section-hero-overlay glass fade-in">
@@ -187,7 +181,7 @@
 
     <section id="hazards" class="section-hero" aria-label="Hazards">
       <video class="full-bg-video" autoplay muted loop playsinline preload="metadata" poster="./assets/hero-bg.jpg" data-fallback-img="./assets/hero-bg.jpg">
-        <source src="./assets/backandforth.mp4" type="video/mp4" />
+        <source src="./assets/hazards.mp4" type="video/mp4" />
       </video>
 
       <div class="section-hero-overlay glass fade-in">
@@ -236,7 +230,7 @@
     </div>
   </div>
 
-  <script src="./main.js?v=9" defer></script>
+  <script src="./main.js?v=10" defer></script>
   <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 </body>
 </html>
