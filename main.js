@@ -1,6 +1,6 @@
 /* =========================================
-   OVERDRIVE main.js — DEFINITIVE PERFORMANCE FIX
-   Key fix: only decode/play videos when visible
+   OVERDRIVE main.js — Hero Smoothness + Perf Watchdog
+   Full replacement
    ========================================= */
 
 (() => {
@@ -16,7 +16,44 @@
   const smallScreen = window.matchMedia("(max-width: 720px)").matches;
 
   // =========================================================
-  // 1) NAV
+  // 0) PERFORMANCE WATCHDOG (auto-disable heavy FX if FPS drops)
+  // =========================================================
+  if (!prefersReduced) {
+    let last = performance.now();
+    let frames = 0;
+    let acc = 0;
+    let lowCount = 0;
+
+    const tick = (t) => {
+      frames++;
+      const dt = t - last;
+      last = t;
+
+      // ignore huge spikes (tab switching)
+      if (dt < 200) acc += 1000 / Math.max(1, dt);
+
+      // evaluate roughly every ~1s
+      if (frames >= 60) {
+        const fps = acc / frames;
+        acc = 0;
+        frames = 0;
+
+        // If sustained < 52fps, enter perf-low mode
+        if (fps < 52) lowCount++;
+        else lowCount = Math.max(0, lowCount - 1);
+
+        const perfLow = lowCount >= 2;
+        document.body.classList.toggle("perf-low", perfLow);
+      }
+
+      requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(tick);
+  }
+
+  // =========================================================
+  // 1) NAV (hamburger)
   // =========================================================
   const hamburger = $(".hamburger");
   const navLinks = $(".nav-links");
@@ -94,119 +131,103 @@
   }
 
   // =========================================================
-  // 4) THE FIX: VIDEO GOVERNOR (ONLY PLAY WHAT'S VISIBLE)
+  // 4) VIDEO GOVERNOR (play only visible videos)
   // =========================================================
   const videos = $$("video");
-
-  // Always make videos cheap
   videos.forEach((v) => {
     v.muted = true;
     v.playsInline = true;
     v.setAttribute("playsinline", "");
     v.setAttribute("muted", "");
     v.setAttribute("webkit-playsinline", "");
-    // avoid eager loading for non-hero: we’ll still allow metadata
-    if (v.id !== "heroVideo") v.preload = "metadata";
+    v.preload = v.id === "heroVideo" ? "auto" : "metadata";
   });
 
-  // Helper safe play
-  const safePlay = async (v) => {
-    try { await v.play(); } catch (_) {}
-  };
-
-  // Pause everything (used on tab hide)
+  const safePlay = async (v) => { try { await v.play(); } catch (_) {} };
   const pauseAll = () => { videos.forEach(v => { try { v.pause(); } catch(_) {} }); };
 
-  // If tab hidden, pause decoding (massive perf win)
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) pauseAll();
-  });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) pauseAll(); });
 
-  // We will keep ONE "active" video at a time (the most visible one)
+  const ratios = new Map();
   let mostVisibleVideo = null;
 
-  // Track intersection ratios to decide which video should run
-  const ratios = new Map(); // video -> ratio
-
   const videoIO = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      ratios.set(e.target, e.intersectionRatio);
-    }
+    for (const e of entries) ratios.set(e.target, e.intersectionRatio);
 
-    // Pick the video with the highest ratio
     let best = null;
     let bestRatio = 0;
 
     for (const [v, r] of ratios.entries()) {
-      if (r > bestRatio) {
-        best = v;
-        bestRatio = r;
-      }
+      if (r > bestRatio) { best = v; bestRatio = r; }
     }
 
-    // If nothing is visible enough, pause all
     if (!best || bestRatio < 0.10) {
       mostVisibleVideo = null;
       pauseAll();
       return;
     }
 
-    // Switch active video
     if (mostVisibleVideo !== best) {
       mostVisibleVideo = best;
-
-      // Pause all others FIRST (prevents multi-decode)
       videos.forEach((v) => { if (v !== best) { try { v.pause(); } catch(_) {} } });
-
-      // Play the active one
       if (!document.hidden) safePlay(best);
     } else {
-      // Keep it playing if it's supposed to be active
       if (!document.hidden) safePlay(best);
     }
-  }, {
-    threshold: [0, 0.10, 0.25, 0.50, 0.75, 0.90]
-  });
+  }, { threshold: [0, 0.10, 0.25, 0.50, 0.75, 0.90] });
 
-  // Observe every video
   videos.forEach(v => videoIO.observe(v));
 
-  // Also attempt play after load (for hero)
-  window.addEventListener("load", () => {
-    const hero = $("#heroVideo");
-    if (hero && !document.hidden) safePlay(hero);
-  }, { once: true });
+  const heroVideo = $("#heroVideo");
+  window.addEventListener("load", () => { if (heroVideo && !document.hidden) safePlay(heroVideo); }, { once: true });
 
   // =========================================================
-  // 5) HERO FX: throttle hard (video smoothness priority)
+  // 5) HERO FX: OFF while hero visible (max smoothness)
   // =========================================================
+  const hero = $(".hero");
+  const canvas = $("#fxParticles");
   const ring1 = $(".ring.r1");
   const ring2 = $(".ring.r2");
   const ring3 = $(".ring.r3");
-  const canvas = $("#fxParticles");
-  const heroSection = $(".hero");
-  const heroVideo = $("#heroVideo");
 
-  // Hard-disable FX on small screens or reduced motion
   const fxDisabledHard = prefersReduced || smallScreen;
 
-  // OPTIONAL: disable particles while hero is visible (max smoothness)
-  // keep TRUE if you want absolute smooth hero.
-  const DISABLE_PARTICLES_WHILE_HERO_VISIBLE = true;
-
   let heroVisible = true;
-  if (heroSection) {
+  if (hero) {
     const heroIO = new IntersectionObserver((entries) => {
       for (const e of entries) heroVisible = e.isIntersecting;
-    }, { threshold: 0.12 });
-    heroIO.observe(heroSection);
+      document.body.classList.toggle("hero-in-view", heroVisible);
+    }, { threshold: 0.20 });
+    heroIO.observe(hero);
   }
 
-  // Rings: cap to ~24fps (more than enough, way cheaper)
-  let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
-  let ringLast = 0;
+  // Cursor glow spotlight (cheap wow) — only desktop
+  if (!fxDisabledHard && hoverCapable) {
+    let mx = 0, my = 0, tx = 0, ty = 0;
+    let last = 0;
 
+    window.addEventListener("mousemove", (e) => {
+      tx = e.clientX;
+      ty = e.clientY;
+    }, { passive: true });
+
+    const glowTick = (t) => {
+      requestAnimationFrame(glowTick);
+      if (t - last < 24) return; // ~40fps throttle
+      last = t;
+      mx = lerp(mx, tx, 0.12);
+      my = lerp(my, ty, 0.12);
+      document.documentElement.style.setProperty("--mx", `${mx}px`);
+      document.documentElement.style.setProperty("--my", `${my}px`);
+    };
+    requestAnimationFrame(glowTick);
+  }
+
+  // Rings parallax only when hero NOT visible (so hero video stays perfect)
   if (!fxDisabledHard && (ring1 || ring2 || ring3)) {
+    let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
+    let ringLast = 0;
+
     window.addEventListener("mousemove", (e) => {
       const cx = window.innerWidth / 2;
       const cy = window.innerHeight / 2;
@@ -216,81 +237,67 @@
 
     const ringTick = (ts) => {
       requestAnimationFrame(ringTick);
-      if (!heroVisible) return;
+      if (heroVisible) return; // OFF during hero
       if (ts - ringLast < 42) return; // ~24fps
       ringLast = ts;
 
-      mouseX = lerp(mouseX, targetX, 0.10);
-      mouseY = lerp(mouseY, targetY, 0.10);
+      mouseX = lerp(mouseX, targetX, 0.12);
+      mouseY = lerp(mouseY, targetY, 0.12);
 
-      const s = clamp(window.scrollY / Math.max(1, window.innerHeight), 0, 1);
-      const strength = 0.55 * (1 - s) + 0.08;
-
+      const strength = 0.35;
       if (ring1) ring1.style.translate = `${(mouseX * 10 * strength).toFixed(2)}px ${(mouseY * 7 * strength).toFixed(2)}px`;
       if (ring2) ring2.style.translate = `${(mouseX * -8 * strength).toFixed(2)}px ${(mouseY * 9 * strength).toFixed(2)}px`;
       if (ring3) ring3.style.translate = `${(mouseX * 6 * strength).toFixed(2)}px ${(mouseY * -6 * strength).toFixed(2)}px`;
     };
-
     requestAnimationFrame(ringTick);
   }
 
-  // Particles: 20–30fps with LOW DPR + dynamic count
+  // Particles: only run when hero NOT visible (so hero video is untouched)
   if (!fxDisabledHard && canvas) {
     const ctx = canvas.getContext("2d", { alpha: true });
-
     let w = 0, h = 0;
-    let dpr = 1; // keep cheap always
-    let particles = [];
-    let targetCount = 28; // MUCH lower by default
-    let running = true;
-
-    const fpsCapMs = 50; // ~20fps
-    let lastFrameTs = 0;
+    const dpr = 1;           // keep cheap
+    const COUNT = 26;        // low by default
+    const fpsCapMs = 50;     // ~20fps
+    let lastFrame = 0;
 
     const rand = (a, b) => a + Math.random() * (b - a);
+    let particles = [];
 
-    function resize() {
+    const resize = () => {
       const rect = canvas.getBoundingClientRect();
       w = Math.max(1, Math.floor(rect.width));
       h = Math.max(1, Math.floor(rect.height));
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
+    };
 
-    function makeParticles(count) {
-      const arr = [];
-      for (let i = 0; i < count; i++) {
-        arr.push({
-          x: rand(0, w),
-          y: rand(0, h),
-          r: rand(0.7, 1.6),
-          vx: rand(-0.10, 0.10),
-          vy: rand(-0.08, 0.14),
-          a: rand(0.10, 0.30),
-          hue: rand(200, 275)
-        });
-      }
-      return arr;
-    }
+    const init = () => {
+      particles = Array.from({ length: COUNT }, () => ({
+        x: rand(0, w), y: rand(0, h),
+        r: rand(0.7, 1.5),
+        vx: rand(-0.10, 0.10),
+        vy: rand(-0.08, 0.14),
+        a: rand(0.10, 0.28),
+        hue: rand(200, 275)
+      }));
+    };
 
-    function draw(ts) {
+    const draw = (t) => {
       requestAnimationFrame(draw);
-      if (!running) return;
-      if (!heroVisible) return;
 
-      // absolute priority: hero video
-      if (DISABLE_PARTICLES_WHILE_HERO_VISIBLE && heroVideo) return;
+      // OFF during hero for max smoothness
+      if (heroVisible) return;
+      if (document.body.classList.contains("perf-low")) return;
 
-      if (ts - lastFrameTs < fpsCapMs) return;
-      lastFrameTs = ts;
+      if (t - lastFrame < fpsCapMs) return;
+      lastFrame = t;
 
       ctx.clearRect(0, 0, w, h);
 
       for (const p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-
+        p.x += p.vx; p.y += p.vy;
         if (p.x < -20) p.x = w + 20;
         if (p.x > w + 20) p.x = -20;
         if (p.y < -20) p.y = h + 20;
@@ -301,26 +308,10 @@
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       }
-    }
+    };
 
-    // Pause particles if hero not visible using IO
-    if (heroSection) {
-      const io = new IntersectionObserver((entries) => {
-        for (const e of entries) {
-          running = e.isIntersecting;
-        }
-      }, { threshold: 0.12 });
-      io.observe(heroSection);
-    }
-
-    resize();
-    particles = makeParticles(targetCount);
-
-    window.addEventListener("resize", () => {
-      resize();
-      particles = makeParticles(targetCount);
-    }, { passive: true });
-
+    resize(); init();
+    window.addEventListener("resize", () => { resize(); init(); }, { passive: true });
     requestAnimationFrame(draw);
   }
 
@@ -344,16 +335,12 @@
 
   const openModal = (card) => {
     if (!modal) return;
-
     const carName = card?.dataset?.car || card?.querySelector("h3")?.textContent?.trim() || "Car";
     const imgSrc = card?.dataset?.img || card?.querySelector("img")?.getAttribute("src") || "";
 
     if (modalTitle) modalTitle.textContent = carName;
     if (modalDesc) modalDesc.textContent = carDescriptions[carName] || "Choose your upgrades. Adapt to hazards. Take the lead.";
-    if (modalImg) {
-      modalImg.src = imgSrc;
-      modalImg.alt = `${carName} car image`;
-    }
+    if (modalImg) { modalImg.src = imgSrc; modalImg.alt = `${carName} car image`; }
 
     modal.classList.add("show");
     document.body.style.overflow = "hidden";
@@ -371,22 +358,15 @@
     card.setAttribute("tabindex", card.getAttribute("tabindex") || "0");
     card.setAttribute("role", card.getAttribute("role") || "button");
     card.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        openModal(card);
-      }
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModal(card); }
     });
   });
 
   modalClose?.addEventListener("click", closeModal);
-
-  if (modal) {
-    modal.addEventListener("click", (e) => {
-      const content = $(".modal-content", modal);
-      if (content && !content.contains(e.target)) closeModal();
-    });
-  }
-
+  if (modal) modal.addEventListener("click", (e) => {
+    const content = $(".modal-content", modal);
+    if (content && !content.contains(e.target)) closeModal();
+  });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && modal?.classList.contains("show")) closeModal();
   });
