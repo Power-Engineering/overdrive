@@ -672,43 +672,97 @@ body::before{
   border-radius: 999px;
 }
 
-/* Card */
+/* =============== CAR CARDS — FUTURE TIER =============== */
+
 .car-card.glass{
   border-radius: 22px;
   padding: 1.65rem 1.1rem 1.2rem;
   min-width: 220px;
   max-width: 320px;
   text-align:center;
-  transition: transform .22s var(--ease), box-shadow .25s var(--ease), border-color .2s var(--ease);
   flex: 0 0 240px;
   margin-bottom: .9rem;
+
   border: 1px solid rgba(255,255,255,.12);
+  background: rgba(12, 14, 24, .55);
+
   position:relative;
   cursor:pointer;
   user-select:none;
-  will-change: transform;
-  perspective: 500px;
   overflow:hidden;
-  box-shadow: var(--shadow2);
-  scroll-snap-align: start;
+  box-shadow: 0 12px 36px rgba(0,0,0,.45);
+
+  /* tilt (JS sets --rx/--ry) */
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(0);
+  transition:
+    transform .18s cubic-bezier(.22,.61,.36,1),
+    box-shadow .22s cubic-bezier(.22,.61,.36,1),
+    border-color .22s cubic-bezier(.22,.61,.36,1);
 }
+
+/* Animated gradient frame */
+.car-card.glass::after{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(124,92,255,.95), rgba(25,211,255,.85), rgba(56,249,165,.55), rgba(124,92,255,.95));
+  background-size: 260% 100%;
+  opacity: .0;
+  filter: blur(10px);
+  z-index:0;
+  transition: opacity .22s cubic-bezier(.22,.61,.36,1);
+}
+
+/* Soft internal lighting */
 .car-card.glass::before{
   content:"";
   position:absolute;
-  inset:-50%;
+  inset:-55%;
   background:
-    radial-gradient(circle at 30% 30%, rgba(124,92,255,.18), transparent 38%),
-    radial-gradient(circle at 75% 40%, rgba(25,211,255,.12), transparent 42%);
-  filter: blur(14px);
-  opacity:.7;
+    radial-gradient(circle at 30% 30%, rgba(124,92,255,.22), transparent 40%),
+    radial-gradient(circle at 75% 40%, rgba(25,211,255,.16), transparent 45%);
+  filter: blur(16px);
+  opacity:.75;
   transform: rotate(12deg);
+  z-index:0;
 }
-.car-card.glass > *{ position:relative; z-index:1; }
+
+/* sheen sweep */
+.car-card.glass .sheen{
+  position:absolute;
+  inset:-40% -60%;
+  background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,.18) 50%, transparent 65%);
+  transform: translateX(-35%) rotate(12deg);
+  opacity:0;
+  z-index:1;
+  pointer-events:none;
+}
+
+.car-card.glass > *{ position:relative; z-index:2; }
 
 .car-card.glass:hover{
-  transform: translateY(-6px);
   border-color: rgba(255,255,255,.22);
-  box-shadow: 0 22px 60px rgba(0,0,0,.55);
+  box-shadow: 0 22px 70px rgba(0,0,0,.60);
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-6px);
+}
+
+.car-card.glass:hover::after{
+  opacity: .28;
+  animation: cardFrame 1.3s linear infinite;
+}
+
+.car-card.glass:hover .sheen{
+  opacity:1;
+  animation: sheen 1.2s cubic-bezier(.22,.61,.36,1) infinite;
+}
+
+@keyframes cardFrame{
+  to{ background-position: 260% 0; }
+}
+@keyframes sheen{
+  0%{ transform: translateX(-35%) rotate(12deg); }
+  100%{ transform: translateX(35%) rotate(12deg); }
 }
 
 .car-card img{
@@ -716,22 +770,16 @@ body::before{
   max-width: 240px;
   border-radius: 14px;
   margin-bottom: 1.05rem;
-  box-shadow: 0 12px 34px rgba(0,0,0,.48);
-  transition: transform .23s var(--ease);
+  box-shadow: 0 14px 38px rgba(0,0,0,.55);
+  transition: transform .22s cubic-bezier(.22,.61,.36,1), filter .22s cubic-bezier(.22,.61,.36,1);
   pointer-events:none;
   user-select:none;
 }
-.car-card:hover img{ transform: translateY(-2px) scale(1.01); }
-
-.car-card h3{
-  font-size: 1.08rem;
-  letter-spacing: .10em;
-  margin-bottom: .15rem;
-  color: rgba(255,255,255,.94);
-  font-family: "Orbitron", sans-serif;
+.car-card:hover img{
+  transform: translateY(-2px) scale(1.01);
+  filter: saturate(1.08) contrast(1.05);
 }
 
-.car-grid-spacer{ height: 90px; }
 
 /* -------------------------
    SECTION HERO (Modshop/Hazards)
