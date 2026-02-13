@@ -1,6 +1,8 @@
 /* =========================================================
-   OVERDRIVE — Performance + Mobile Fix (Full Replacement)
-   Fix hero compositing lag + mobile cars carousel
+   OVERDRIVE — Performance + Mobile Fix (NO HERO RINGS/CIRCLE)
+   - Removes the visible "circle" overlay on hero
+   - Disables hero FX stack (rings/canvas/scanlines) completely
+   - Keeps mobile car panels swipeable
    ========================================================= */
 
 :root{
@@ -48,7 +50,7 @@ body{
   font-size: 1.03rem;
 }
 
-/* Light grain (no blend mode = cheaper) */
+/* Light grain (cheap) */
 body::after{
   content:"";
   position:fixed; inset:0;
@@ -201,7 +203,7 @@ a:hover{ text-decoration:none; }
 }
 
 /* =========================
-   HERO (PERFORMANCE)
+   HERO (NO RINGS / NO CIRCLE)
 ========================= */
 .hero{
   position:relative;
@@ -213,67 +215,56 @@ a:hover{ text-decoration:none; }
   background: rgba(7,10,18,.80);
   isolation:isolate;
 }
+
+/* IMPORTANT:
+   Your old hero::before was a RADIAL gradient = looks like a big circle.
+   This replaces it with a non-circular cinematic overlay.
+*/
 .hero::before{
   content:"";
   position:absolute;
   inset:0;
   z-index:1;
   pointer-events:none;
-  background: radial-gradient(900px 520px at 50% 40%, rgba(0,0,0,0.25), rgba(0,0,0,0.70));
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.68)),
+    linear-gradient(120deg, rgba(124,92,255,.08), transparent 55%),
+    linear-gradient(300deg, rgba(25,211,255,.06), transparent 60%);
 }
-.hero-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
 
+/* hero video must be direct-present (no opacity/transform/filter) */
+.hero-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit: cover;
+  z-index:0;
   opacity: 1 !important;
   transform: none !important;
   filter: none !important;
   will-change: auto !important;
 }
 
-/* Auto performance downgrade */
-body.perf-low #fxParticles,
-body.perf-low .scanlines,
-body.perf-low .rings{
-  display: none !important;
+/* HARD disable any hero FX stack (rings/canvas/scanlines) */
+.hero .fx-stack,
+.hero #fxParticles,
+.hero .rings,
+.hero .ring,
+.hero .scanlines{
+  display:none !important;
 }
 
-/* During hero: keep FX off so hero video is perfect */
-body.hero-in-view #fxParticles{
-  display: none !important;
-}
-
-
-/* ✅ Hero FX overrides (important!) */
-#fxParticles{
-  opacity: .30 !important;
-  /* BIG WIN: blend modes can destroy FPS */
-  mix-blend-mode: normal !important;
-  /* keep the canvas from forcing repaints elsewhere */
-  contain: layout paint;
-}
-.scanlines{
-  opacity: .05 !important;
-}
-.rings{
-  opacity: .60 !important;
-  filter: none !important; /* drop-shadow is expensive */
-}
-.ring{
-  box-shadow: none !important; /* remove glow shadows */
-  border-color: rgba(255,255,255,.12);
-}
-
-.hero .overlay.glass {
+/* Overlay card: NO blur over video */
+.hero .overlay.glass{
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   background: rgba(10,12,20,0.65) !important;
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: var(--shadow);
 }
 
+/* Title */
 .hero-title{
   font-size: clamp(2.45rem, 6vw, 5.2rem);
   color:#fff;
@@ -534,11 +525,11 @@ body.hero-in-view #fxParticles{
   color: transparent;
 }
 
-/* ✅ Make it a proper swipe carousel */
+/* Swipe carousel */
 .car-row-noscroll{
   display:flex;
   align-items:stretch;
-  justify-content:flex-start;         /* IMPORTANT: don’t center on mobile */
+  justify-content:flex-start;
   gap: 16px;
   overflow-x:auto;
   overflow-y:visible;
@@ -549,6 +540,7 @@ body.hero-in-view #fxParticles{
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x mandatory;
   scroll-padding-left: 16px;
+
   scrollbar-width: thin;
   scrollbar-color: rgba(124,92,255,.70) rgba(255,255,255,.08);
 
@@ -560,7 +552,6 @@ body.hero-in-view #fxParticles{
   border-radius: 999px;
 }
 
-/* Desktop default */
 .car-card.glass{
   border-radius: 22px;
   padding: 2.0rem 1.15rem 1.3rem 1.15rem;
@@ -580,7 +571,6 @@ body.hero-in-view #fxParticles{
   box-shadow: var(--shadow2);
   scroll-snap-align: start;
 }
-
 .car-card.glass:hover{
   border-color: rgba(255,255,255,.22);
   box-shadow: 0 18px 44px rgba(0,0,0,.55);
@@ -680,10 +670,10 @@ body.hero-in-view #fxParticles{
   height:100%;
   object-fit: cover;
   z-index:0;
-  opacity:.92;
-  transform: translateZ(0) scale(1.01);
-  will-change: transform;
-  filter: none;
+  opacity:1;                 /* keep 1 to avoid blend cost */
+  transform:none;            /* no transform */
+  filter:none;               /* no filter */
+  will-change:auto;
 }
 .section-hero-overlay{
   position:absolute;
@@ -792,25 +782,19 @@ footer a{
   .section-hero-overlay{ padding: 2.0rem 1.0rem 1.35rem 1.0rem; }
   .hud{ grid-template-columns: 1fr; }
 
-  /* ✅ MOBILE: disable hero FX layers entirely (huge smoothness win) */
-  #fxParticles, .rings, .scanlines{ display:none !important; }
-
-  /* ✅ MOBILE: make car cards big + swipeable */
+  /* Mobile: big swipe cards */
   .car-row-noscroll{ gap: 14px; }
   .car-card.glass{
     flex: 0 0 78vw;
     max-width: 78vw;
     min-width: 78vw;
   }
-  .car-card img{
-    max-width: 100%;
-  }
+  .car-card img{ max-width: 100%; }
 }
 @media (max-width: 430px){
   .navbar{ flex-direction: column; align-items:flex-start; padding: .75rem 4vw; }
   .logo{ font-size: 1.2rem; }
 
-  /* Even larger swipe cards on tiny screens */
   .car-card.glass{
     flex: 0 0 84vw;
     max-width: 84vw;
@@ -823,18 +807,4 @@ footer a{
 
 @media (prefers-reduced-motion: reduce){
   *{ animation:none !important; transition:none !important; }
-}
-/* =========================================
-   REMOVE HERO CIRCLE / RINGS COMPLETELY
-   ========================================= */
-
-.rings,
-.ring,
-.ring.r1,
-.ring.r2,
-.ring.r3 {
-  display: none !important;
-}
-#fxParticles {
-  display: none !important;
 }
