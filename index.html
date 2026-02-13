@@ -1,484 +1,298 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="description" content="OVERDRIVE — Deck-build street racing. Tune up, adapt to hazards, take the lead." />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#070A12" />
+  <meta name="color-scheme" content="dark" />
 
-  <title>OVERDRIVE — Racing Board Game</title>
+  <title>OVERDRIVE — The Card Racing Game From The Future</title>
+  <meta name="description" content="OVERDRIVE is a high-intensity card racing game where upgrades, hazards, and drafting decide the winner. Futuristic, fast, and built to feel like a next-gen experience." />
 
-  <!-- Social preview -->
-  <meta property="og:title" content="OVERDRIVE — Racing Board Game" />
-  <meta property="og:description" content="Deck-build. Tune up. Take the lead." />
+  <!-- Social -->
+  <meta property="og:title" content="OVERDRIVE" />
+  <meta property="og:description" content="The card racing game from the future. Upgrade. Draft. Survive hazards. Win." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="assets/hero-bg.jpg" />
+  <meta property="og:image" content="./assets/hero-poster.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Fonts -->
+  <!-- Performance: preconnect fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 
-  <!-- Your stylesheet -->
-  <link rel="stylesheet" href="style.css" />
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
 
-  <!-- Index-only FX layer (we’ll move to style.css later) -->
-  <style>
-    /* Keep FX layers cheap: avoid full-screen backdrop-filter over video */
-    .fx-stack { position:absolute; inset:0; pointer-events:none; z-index:1; }
+  <!-- CSS -->
+  <link rel="stylesheet" href="./style.css?v=1" />
 
-    /* Particle canvas sits above video, below hero card */
-    #fxParticles{
-      position:absolute; inset:0;
-      width:100%; height:100%;
-      opacity:.55;
-      mix-blend-mode: screen;
-    }
+  <!-- Hint the browser about hero video -->
+  <link rel="preload" as="video" href="./assets/showdowncover.mp4" type="video/mp4" />
 
-    /* Scanlines (subtle, premium) */
-    .scanlines{
-      position:absolute; inset:0;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,.04),
-        rgba(255,255,255,.04) 1px,
-        rgba(0,0,0,0) 3px,
-        rgba(0,0,0,0) 7px
-      );
-      opacity:.10;
-      mix-blend-mode: overlay;
-    }
-
-    /* Rotating ring art (CSS-only) */
-    .rings{
-      position:absolute; inset:0;
-      opacity:.85;
-      filter: drop-shadow(0 24px 70px rgba(0,0,0,.45));
-    }
-    .ring{
-      position:absolute;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow: 0 0 40px rgba(124,92,255,.14);
-      background:
-        radial-gradient(circle at 30% 30%, rgba(124,92,255,.22), transparent 45%),
-        radial-gradient(circle at 70% 40%, rgba(25,211,255,.16), transparent 48%),
-        radial-gradient(circle at 50% 75%, rgba(56,249,165,.12), transparent 52%);
-      transform: translateZ(0);
-      will-change: transform;
-    }
-    .ring.r1{
-      width:min(980px, 120vw); height:min(980px, 120vw);
-      left:50%; top:48%;
-      transform: translate(-50%,-50%);
-      animation: spinA 22s linear infinite;
-      opacity:.55;
-    }
-    .ring.r2{
-      width:min(760px, 98vw); height:min(760px, 98vw);
-      left:50%; top:52%;
-      transform: translate(-50%,-50%);
-      animation: spinB 15s linear infinite reverse;
-      opacity:.45;
-      border-color: rgba(255,255,255,.12);
-    }
-    .ring.r3{
-      width:min(560px, 78vw); height:min(560px, 78vw);
-      left:50%; top:54%;
-      transform: translate(-50%,-50%);
-      animation: spinA 10s linear infinite;
-      opacity:.35;
-      border-color: rgba(255,255,255,.10);
-    }
-    @keyframes spinA { to { transform: translate(-50%,-50%) rotate(360deg); } }
-    @keyframes spinB { to { transform: translate(-50%,-50%) rotate(360deg); } }
-
-    /* Make hero video cheaper to render */
-    .hero-video{
-      transform: translateZ(0) scale(1.02);
-      will-change: transform;
-      /* IMPORTANT: keep filters very light (filters cost GPU) */
-      filter: saturate(1.03) contrast(1.03) brightness(.90);
-    }
-
-    /* Keep the hero card crisp but NOT full-screen blur */
-    .overlay.glass{
-      backdrop-filter: blur(14px) saturate(1.12);
-      -webkit-backdrop-filter: blur(14px) saturate(1.12);
-    }
-
-    /* Section “rails” */
-    .rail{
-      display:flex; align-items:center; gap:12px;
-      margin: 18px 0 0;
-      opacity:.85;
-      justify-content:center;
-      flex-wrap:wrap;
-    }
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      font-size:.86rem;
-      color: rgba(255,255,255,.80);
-    }
-    .pill i{
-      width:10px; height:10px; border-radius:99px;
-      background: linear-gradient(90deg,#7C5CFF,#19D3FF,#38F9A5);
-      display:inline-block;
-      box-shadow: 0 0 18px rgba(124,92,255,.45);
-    }
-  </style>
+  <link rel="icon" href="./assets/favicon.ico" />
 </head>
 
 <body>
-  <!-- NAV -->
-  <nav class="navbar glass" aria-label="Primary">
-    <div class="logo kinetic-logo" role="button" tabindex="0" aria-label="Overdrive Home">OVERDRIVE</div>
+  <!-- =========================
+       NAV
+  ========================== -->
+  <nav class="navbar" aria-label="Primary">
+    <a class="logo kinetic-logo" href="#top" aria-label="Overdrive Home">
+      <span class="logoO" aria-hidden="true">O</span><span class="logoRest">VERDRIVE</span>
+    </a>
 
-    <button class="hamburger" aria-label="Open navigation" aria-expanded="false" aria-controls="navLinks">
+    <button class="hamburger" type="button" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
 
     <ul class="nav-links" id="navLinks">
+      <li><a href="#about">About</a></li>
       <li><a href="#cars">Cars</a></li>
       <li><a href="#modshop">Mod Shop</a></li>
       <li><a href="#hazards">Hazards</a></li>
-      <li><a href="#download">Download</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="#cta">Play</a></li>
     </ul>
   </nav>
 
-  <main>
-    <!-- HERO -->
-    <header class="hero" id="home" aria-label="Overdrive hero">
-      <!-- Video: SOURCE IN HTML (best autoplay reliability) -->
+  <main id="top">
+    <!-- =========================
+         HERO (Clean. No heavy FX layers.)
+    ========================== -->
+    <header class="hero" aria-label="Hero">
       <video
         id="heroVideo"
         class="hero-video"
         autoplay
-        loop
         muted
+        loop
         playsinline
-        preload="metadata"
-        poster="assets/hero-bg.jpg"
-        aria-hidden="true"
-      >
-        <source src="assets/showdowncover.mp4" type="video/mp4" />
+        preload="auto"
+        poster="./assets/hero-poster.jpg">
+        <source src="./assets/showdowncover.mp4" type="video/mp4" />
       </video>
 
-      <!-- FX stack (particles + rings + scanlines) -->
-      <div class="fx-stack" aria-hidden="true">
-        <canvas id="fxParticles"></canvas>
-        <div class="rings">
-          <div class="ring r1"></div>
-          <div class="ring r2"></div>
-          <div class="ring r3"></div>
-        </div>
-        <div class="scanlines"></div>
-      </div>
-
-      <!-- Hero card -->
-      <div class="overlay glass fade-in" role="region" aria-label="Overdrive intro">
-        <h1 class="hero-title kinetic-text">OVERDRIVE</h1>
-
-        <p class="subtitle">
-          Deck-build. Tune up. <span class="highlight-gradient">Take the lead.</span>
+      <div class="overlay glass">
+        <p class="tagline fade-in">
+          <span class="chip">NEXT-GEN</span>
+          <span class="chip">CARD RACING</span>
+          <span class="chip">TACTICAL CHAOS</span>
         </p>
 
-        <a href="#cars" class="btn pulse hero-btn" aria-label="Pick Your Car">Pick Your Car</a>
+        <h1 class="hero-title kinetic-text">OVERDRIVE</h1>
 
-        <!-- Quick “feature pills” -->
-        <div class="rail" aria-label="Highlights">
-          <span class="pill"><i></i> Deck-build racing</span>
-          <span class="pill"><i></i> Mod shop upgrades</span>
-          <span class="pill"><i></i> Hazards & events</span>
-          <span class="pill"><i></i> Print & play</span>
+        <p class="subtitle fade-in">
+          Upgrade your car. Draft your rivals. Survive hazards.
+          <span class="highlight-gradient">Win the showdown.</span>
+        </p>
+
+        <div class="hero-actions fade-in">
+          <a class="btn hero-btn pulse" href="#cars" aria-label="Explore cars">
+            Explore Cars
+          </a>
+          <a class="btn btn-ghost" href="#about" aria-label="Learn about the game">
+            Learn More
+          </a>
         </div>
 
-        <!-- HUD -->
-        <div class="hud" aria-label="Game highlights">
+        <div class="hud fade-in" aria-label="Game highlights">
           <div class="hudCard">
-            <div class="k">PLAY STYLE</div>
-            <div class="v">Deck-Build + Race</div>
+            <div class="k">MODE</div>
+            <div class="v">RACE + DECK</div>
           </div>
           <div class="hudCard">
-            <div class="k">VIBE</div>
-            <div class="v">Neon Street</div>
+            <div class="k">FEEL</div>
+            <div class="v">FAST / CLEAN</div>
           </div>
           <div class="hudCard">
             <div class="k">GOAL</div>
-            <div class="v">Win the Circuit</div>
+            <div class="v">OUTPLAY</div>
           </div>
         </div>
 
         <div class="down-chevron" aria-hidden="true"></div>
       </div>
 
-      <div class="hero-wave" aria-hidden="true">
-        <svg width="100%" height="60" viewBox="0 0 1920 60" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-          <path d="M0 60V20C480 80 1440 0 1920 60V0H0V60Z" fill="#0b0e18"/>
-          <path d="M0 60V40C480 110 1440 20 1920 60V0H0V60Z" fill="url(#gradient1)"/>
-          <defs>
-            <linearGradient id="gradient1" x1="0" y1="0" x2="1920" y2="60" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#7C5CFF" stop-opacity="0.16"/>
-              <stop offset="0.55" stop-color="#19D3FF" stop-opacity="0.12"/>
-              <stop offset="1" stop-color="#38F9A5" stop-opacity="0.10"/>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
+      <!-- Optional lightweight section divider (SVG only) -->
+      <svg class="hero-wave" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,96 C240,160 480,0 720,64 C960,128 1200,48 1440,96 L1440,160 L0,160 Z" fill="rgba(0,0,0,0.40)"></path>
+      </svg>
     </header>
 
-    <!-- ABOUT / FEATURES -->
-    <section class="sectionPad fade-in" aria-label="About Overdrive">
+    <!-- =========================
+         ABOUT
+    ========================== -->
+    <section id="about" class="sectionPad">
       <div class="container">
-        <div class="sectionHead">
-          <h2 class="sectionTitle">Modern tactics. Cinematic turns.</h2>
-          <p class="sectionKicker">
-            A sleek ruleset with big “trailer moments” — boost lines, hazard pivots, and mod builds that change your identity mid-race.
-          </p>
+        <div class="sectionHead fade-in">
+          <div>
+            <h2 class="sectionTitle">Designed like a future sport</h2>
+            <p class="sectionKicker">
+              OVERDRIVE mixes precision racing with tactical deck decisions.
+              It’s not just speed — it’s timing, upgrades, drafting, and chaos control.
+            </p>
+          </div>
         </div>
 
-        <div class="featureGrid" role="list">
-          <article class="feature" role="listitem">
-            <div class="tag"><span class="dot"></span> TACTICAL</div>
-            <h3>Deck decisions that matter</h3>
-            <p>Build speed, drift, and boost packages — then adapt when the track fights back.</p>
+        <div class="featureGrid">
+          <article class="feature fade-in">
+            <div class="tag"><span class="dot"></span> Upgrades</div>
+            <h3>Build your machine</h3>
+            <p>Swap parts, tune momentum, and stack combos that feel unfair (in the best way).</p>
           </article>
 
-          <article class="feature" role="listitem">
-            <div class="tag"><span class="dot"></span> PROGRESSION</div>
-            <h3>Mod shop builds</h3>
-            <p>Turbo, brakes, grip, risky tech. Every upgrade changes how your deck “drives”.</p>
+          <article class="feature fade-in">
+            <div class="tag"><span class="dot"></span> Drafting</div>
+            <h3>Slipstream strategy</h3>
+            <p>Use position and pacing to set traps, bait hazards, and steal the lead late.</p>
           </article>
 
-          <article class="feature" role="listitem">
-            <div class="tag"><span class="dot"></span> DRAMA</div>
-            <h3>Hazards & events</h3>
-            <p>Rain, trouble, obstacles — the race evolves, and so does your plan.</p>
+          <article class="feature fade-in">
+            <div class="tag"><span class="dot"></span> Hazards</div>
+            <h3>Chaos you can plan for</h3>
+            <p>Random events with predictable counterplay — skill decides who survives the storm.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <!-- CARS -->
-    <section id="cars" class="cars-bg-art fade-in" aria-label="Choose Your Car">
+    <!-- =========================
+         CARS
+    ========================== -->
+    <section id="cars" class="cars-bg-art sectionPad" aria-label="Cars">
       <div class="cars-art-bg" aria-hidden="true"></div>
 
       <div class="cars-full-row">
-        <div class="car-grid-spacer" aria-hidden="true"></div>
+        <h2 class="fade-in">Choose Your Ride</h2>
 
-        <h2>Pick Your Ride</h2>
-
-        <div class="car-row-noscroll" tabindex="0" aria-label="Car selection">
-          <div class="car-card glass" data-car="Toyota GT86" data-img="assets/car-toyota-gt86.jpg">
-            <img src="assets/car-toyota-gt86.jpg" alt="Toyota GT86 – Agile street racer" loading="lazy" />
+        <div class="car-row-noscroll fade-in" aria-label="Car selection carousel">
+          <article class="car-card glass" data-car="Toyota GT86" data-img="./assets/cars/gt86.png">
+            <img src="./assets/cars/gt86.png" alt="Toyota GT86" loading="lazy" />
             <h3>Toyota GT86</h3>
-          </div>
+            <p class="muted">Lightweight / Precision</p>
+          </article>
 
-          <div class="car-card glass" data-car="Nissan 370Z" data-img="assets/car-nissan-370z.jpg">
-            <img src="assets/car-nissan-370z.jpg" alt="Nissan 370Z – Classic sports coupe" loading="lazy" />
+          <article class="car-card glass" data-car="Nissan 370Z" data-img="./assets/cars/370z.png">
+            <img src="./assets/cars/370z.png" alt="Nissan 370Z" loading="lazy" />
             <h3>Nissan 370Z</h3>
-          </div>
+            <p class="muted">Balanced / Control</p>
+          </article>
 
-          <div class="car-card glass" data-car="Audi TT" data-img="assets/car-audi-tt.jpg">
-            <img src="assets/car-audi-tt.jpg" alt="Audi TT – Sleek performance car" loading="lazy" />
+          <article class="car-card glass" data-car="Audi TT" data-img="./assets/cars/auditt.png">
+            <img src="./assets/cars/auditt.png" alt="Audi TT" loading="lazy" />
             <h3>Audi TT</h3>
-          </div>
+            <p class="muted">Grip / Efficiency</p>
+          </article>
 
-          <div class="car-card glass" data-car="Ford Mustang GT" data-img="assets/car-fordmustang.jpg">
-            <img src="assets/car-fordmustang.jpg" alt="Ford Mustang GT – American muscle" loading="lazy" />
-            <h3>Ford Mustang GT</h3>
-          </div>
+          <article class="car-card glass" data-car="Ford Mustang GT" data-img="./assets/cars/mustang.png">
+            <img src="./assets/cars/mustang.png" alt="Ford Mustang GT" loading="lazy" />
+            <h3>Mustang GT</h3>
+            <p class="muted">Power / Pressure</p>
+          </article>
 
-          <div class="car-card glass" data-car="Mazda MX-5" data-img="assets/car-mazda-mx-5.png">
-            <img src="assets/car-mazda-mx-5.png" alt="Mazda MX-5 – Lightweight roadster" loading="lazy" />
+          <article class="car-card glass" data-car="Mazda MX-5" data-img="./assets/cars/mx5.png">
+            <img src="./assets/cars/mx5.png" alt="Mazda MX-5" loading="lazy" />
             <h3>Mazda MX-5</h3>
-          </div>
+            <p class="muted">Momentum / Draft</p>
+          </article>
         </div>
 
         <div class="car-grid-spacer" aria-hidden="true"></div>
       </div>
     </section>
 
-    <!-- MODAL -->
-    <div class="modal" id="car-modal" aria-modal="true" role="dialog" aria-label="Car details">
-      <div class="modal-content glass">
-        <button class="modal-close" aria-label="Close">&times;</button>
-        <img src="" alt="" class="modal-img" />
-        <h3 class="modal-title"></h3>
-        <p class="modal-desc"></p>
-      </div>
-    </div>
-
-    <!-- MOD SHOP -->
-    <section id="modshop" class="section-hero modshop-hero fade-in" aria-label="Mod Shop">
-      <video autoplay loop muted playsinline preload="metadata" class="full-bg-video" aria-hidden="true">
-        <source src="assets/neon-carloop.mp4" type="video/mp4">
+    <!-- =========================
+         MOD SHOP (Section hero)
+    ========================== -->
+    <section id="modshop" class="section-hero" aria-label="Mod Shop">
+      <video class="full-bg-video" autoplay muted loop playsinline preload="metadata" poster="./assets/modshop-poster.jpg">
+        <source src="./assets/modshop.mp4" type="video/mp4" />
       </video>
 
-      <div class="section-hero-overlay glass">
+      <div class="section-hero-overlay glass fade-in">
         <h2>Mod Shop</h2>
-        <p>Upgrade with turbo kits, coilovers, brakes, and more. This is where champions are built.</p>
+        <h3>Turn upgrades into a weapon</h3>
+        <p>
+          Build a deck that fits your style: acceleration bursts, defense timing, risk-reward plays,
+          or clean consistency. Every card has counterplay. Every run feels different.
+        </p>
       </div>
+
+      <svg class="divider-svg" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,80 C240,140 480,20 720,80 C960,140 1200,40 1440,90 L1440,160 L0,160 Z" fill="rgba(0,0,0,0.45)"></path>
+      </svg>
     </section>
 
-    <!-- HAZARDS -->
-    <section id="hazards" class="section-hero hazard-hero fade-in" aria-label="Hazards & Events">
-      <video autoplay loop muted playsinline preload="metadata" class="full-bg-video" aria-hidden="true">
-        <source src="assets/backandforth.mp4" type="video/mp4">
+    <!-- =========================
+         HAZARDS (Section hero)
+    ========================== -->
+    <section id="hazards" class="section-hero" aria-label="Hazards">
+      <video class="full-bg-video" autoplay muted loop playsinline preload="metadata" poster="./assets/hazards-poster.jpg">
+        <source src="./assets/hazards.mp4" type="video/mp4" />
       </video>
 
-      <div class="section-hero-overlay glass center-overlay">
-        <h2>Hazards & Events</h2>
-        <h3>Race-changing chaos</h3>
-        <p>Rain, engine trouble, and obstacles can flip the race. Adapt your deck and survive.</p>
+      <div class="section-hero-overlay glass fade-in">
+        <h2>Hazards</h2>
+        <h3>Chaos with a skill ceiling</h3>
+        <p>
+          Oil slicks, road debris, sudden storms — hazards force adaptation.
+          Smart players plan mitigation. Great players weaponize the chaos.
+        </p>
       </div>
 
-      <div class="divider-svg" aria-hidden="true">
-        <svg viewBox="0 0 1920 80" width="100%" height="80" fill="none" preserveAspectRatio="none">
-          <path d="M0 80Q480 60 960 80T1920 80V0H0Z" fill="#0b0e18"/>
-          <path d="M0 80Q480 80 960 90T1920 80V0H0Z" fill="url(#dividergrad3)"/>
-          <defs>
-            <linearGradient id="dividergrad3" x1="0" y1="0" x2="1920" y2="80" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#7C5CFF" stop-opacity="0.12"/>
-              <stop offset="0.6" stop-color="#19D3FF" stop-opacity="0.10"/>
-              <stop offset="1" stop-color="#38F9A5" stop-opacity="0.08"/>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
+      <svg class="divider-svg" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,96 C220,20 520,180 720,96 C980,0 1200,140 1440,90 L1440,160 L0,160 Z" fill="rgba(0,0,0,0.45)"></path>
+      </svg>
     </section>
 
-    <!-- DOWNLOAD -->
-    <section class="sectionPad fade-in" id="download" aria-label="Download">
+    <!-- =========================
+         CTA
+    ========================== -->
+    <section id="cta" class="sectionPad">
       <div class="container">
-        <div class="ctaBand">
+        <div class="ctaBand glass fade-in">
           <div>
-            <h3>Print & Play. Tonight.</h3>
-            <p>Grab the kit and run a race in minutes. Fast setup, cinematic outcomes.</p>
+            <h3>Ready to race the future?</h3>
+            <p>Join the early wave. Playtest. Share feedback. Help shape OVERDRIVE into a legend.</p>
           </div>
-          <a href="assets/Overdrive_PrintAndPlay.pdf" class="btn pulse big-btn" download aria-label="Download Print and Play kit">
-            Download Kit
+          <a class="btn big-btn" href="#" aria-label="Join playtest">
+            Join Playtest
           </a>
         </div>
       </div>
     </section>
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+    <footer class="glass">
+      <div class="footer-social">
+        <a class="social-icon" href="#" aria-label="Twitter / X">X</a>
+        <a class="social-icon" href="#" aria-label="YouTube">YT</a>
+        <a class="social-icon" href="#" aria-label="Discord">D</a>
+      </div>
+      <p>© <span id="year"></span> OVERDRIVE</p>
+      <p><a href="#top">Back to top</a></p>
+    </footer>
   </main>
 
-  <!-- FOOTER -->
-  <footer id="contact" class="glass" aria-label="Footer">
-    <div class="footer-social" aria-label="Social links">
-      <a href="#" class="social-icon" aria-label="Instagram">
-        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
-          <circle cx="11" cy="11" r="10" fill="none" stroke="#7C5CFF" stroke-width="2"/>
-          <circle cx="11" cy="11" r="5" fill="none" stroke="#19D3FF" stroke-width="2"/>
-          <circle cx="16" cy="6" r="1" fill="#38F9A5"/>
-        </svg>
-      </a>
-      <a href="#" class="social-icon" aria-label="Discord">
-        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
-          <rect x="2" y="6" width="18" height="10" rx="5" fill="none" stroke="#19D3FF" stroke-width="2"/>
-          <circle cx="7.5" cy="11" r="1.5" fill="#7C5CFF"/>
-          <circle cx="14.5" cy="11" r="1.5" fill="#38F9A5"/>
-        </svg>
-      </a>
+  <!-- =========================
+       CAR MODAL
+  ========================== -->
+  <div id="car-modal" class="modal" aria-hidden="true" role="dialog" aria-label="Car details">
+    <div class="modal-content">
+      <button class="modal-close" type="button" aria-label="Close">×</button>
+      <img class="modal-img" src="" alt="" />
+      <h3 class="modal-title"></h3>
+      <p class="modal-desc"></p>
     </div>
+  </div>
 
-    <p>&copy; 2026 Overdrive. All rights reserved.</p>
-    <p><a href="mailto:contact@overdrivegame.com">Contact Us</a></p>
-  </footer>
+  <!-- JS -->
+  <script src="./main.js?v=1" defer></script>
 
-  <noscript>
-    <div style="padding:14px; text-align:center; background:#111; color:#fff;">
-      This site looks best with JavaScript enabled (animations + car modal + FX).
-    </div>
-  </noscript>
-
-  <!-- Particle canvas (tiny + fast). We’ll move to main.js next step. -->
+  <!-- tiny no-cost helper -->
   <script>
-    (function () {
-      const c = document.getElementById("fxParticles");
-      if (!c) return;
-
-      const ctx = c.getContext("2d", { alpha: true });
-      let w = 0, h = 0, dpr = Math.min(2, window.devicePixelRatio || 1);
-
-      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (prefersReduced) return;
-
-      const particles = [];
-      const COUNT = 90;
-
-      function resize(){
-        const rect = c.getBoundingClientRect();
-        w = Math.max(1, Math.floor(rect.width));
-        h = Math.max(1, Math.floor(rect.height));
-        c.width = Math.floor(w * dpr);
-        c.height = Math.floor(h * dpr);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
-
-      function rand(a,b){ return a + Math.random()*(b-a); }
-
-      function init(){
-        particles.length = 0;
-        for(let i=0;i<COUNT;i++){
-          particles.push({
-            x: rand(0,w),
-            y: rand(0,h),
-            r: rand(0.6, 2.2),
-            vx: rand(-0.18, 0.18),
-            vy: rand(-0.12, 0.22),
-            a: rand(0.15, 0.55),
-            hue: rand(190, 280)
-          });
-        }
-      }
-
-      function step(){
-        ctx.clearRect(0,0,w,h);
-
-        // soft glow dots
-        for(const p of particles){
-          p.x += p.vx;
-          p.y += p.vy;
-
-          if (p.x < -20) p.x = w + 20;
-          if (p.x > w + 20) p.x = -20;
-          if (p.y < -20) p.y = h + 20;
-          if (p.y > h + 20) p.y = -20;
-
-          ctx.beginPath();
-          ctx.fillStyle = `hsla(${p.hue}, 95%, 70%, ${p.a})`;
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-          ctx.fill();
-        }
-
-        requestAnimationFrame(step);
-      }
-
-      resize();
-      init();
-      step();
-
-      window.addEventListener("resize", () => {
-        resize();
-        init();
-      }, { passive: true });
-
-      // Ensure hero video tries to play (helps some browsers when heavy FX exist)
-      const v = document.getElementById("heroVideo");
-      if (v) {
-        window.addEventListener("load", () => v.play().catch(() => {}), { once: true });
-      }
-    })();
+    document.getElementById("year").textContent = new Date().getFullYear();
   </script>
-
-  <!-- Your JS -->
-  <script src="main.js"></script>
 </body>
 </html>
