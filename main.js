@@ -78,26 +78,42 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* =========================================================
-     VIDEO GOVERNOR (smoothness)
-  ========================================================= */
-  const videos = $$("video");
-  const videoObserver = new IntersectionObserver(
+// =========================================================
+// VIDEO GOVERNOR (hero only)
+// Keep hero ultra-smooth, but DO NOT mess with section videos
+// =========================================================
+const heroVideo = document.getElementById("heroVideo");
+
+if (heroVideo) {
+  heroVideo.muted = true;
+  heroVideo.playsInline = true;
+
+  const heroObs = new IntersectionObserver(
     (entries) => {
-      entries.forEach(entry => {
-        const vid = entry.target;
-        if (entry.isIntersecting) vid.play().catch(() => {});
-        else vid.pause();
-      });
+      for (const e of entries) {
+        if (e.isIntersecting) heroVideo.play().catch(() => {});
+        else heroVideo.pause();
+      }
     },
     { threshold: 0.35 }
   );
+  heroObs.observe(heroVideo);
+}
 
-  videos.forEach(v => {
-    v.muted = true;
-    v.playsInline = true;
-    videoObserver.observe(v);
-  });
+// Section videos: just ensure they try to play once they can
+document.querySelectorAll(".section-hero .full-bg-video").forEach(v => {
+  v.muted = true;
+  v.playsInline = true;
+  v.loop = true;
+  v.autoplay = true;
+
+  // Attempt play when enough data is ready
+  v.addEventListener("canplay", () => v.play().catch(() => {}), { once: true });
+
+  // If the browser blocks autoplay for any reason, try again on first user interaction
+  const retry = () => v.play().catch(() => {});
+  window.addEventListener("pointerdown", retry, { once: true, passive: true });
+});
 
   /* =========================================================
      FADE-IN
