@@ -1,6 +1,6 @@
 /* =========================================
-   OVERDRIVE main.js — HERO LAG FIX (Full Replacement)
-   Goal: smooth hero video + mobile fixes preserved
+   OVERDRIVE main.js — DEFINITIVE PERFORMANCE FIX
+   Key fix: only decode/play videos when visible
    ========================================= */
 
 (() => {
@@ -13,10 +13,11 @@
 
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const hoverCapable = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const smallScreen = window.matchMedia("(max-width: 720px)").matches;
 
-  // ============================
-  // 1) Mobile Nav (hamburger)
-  // ============================
+  // =========================================================
+  // 1) NAV
+  // =========================================================
   const hamburger = $(".hamburger");
   const navLinks = $(".nav-links");
 
@@ -32,12 +33,10 @@
     if (navLinks.id) hamburger.setAttribute("aria-controls", navLinks.id);
 
     hamburger.addEventListener("click", () => setNavOpen(!navLinks.classList.contains("open")));
-    navLinks.addEventListener("click", (e) => {
-      if (e.target.closest("a")) setNavOpen(false);
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") setNavOpen(false);
-    });
+    navLinks.addEventListener("click", (e) => { if (e.target.closest("a")) setNavOpen(false); });
+
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") setNavOpen(false); });
+
     document.addEventListener("click", (e) => {
       if (!navLinks.classList.contains("open")) return;
       const inside = navLinks.contains(e.target) || hamburger.contains(e.target);
@@ -45,9 +44,9 @@
     });
   }
 
-  // ============================
-  // 2) Kinetic Text
-  // ============================
+  // =========================================================
+  // 2) KINETIC TEXT
+  // =========================================================
   const kinetic = $(".kinetic-text");
   if (kinetic && !kinetic.dataset.kineticDone) {
     kinetic.dataset.kineticDone = "1";
@@ -69,14 +68,12 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
     kineticLogo.addEventListener("click", fire);
-    kineticLogo.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") fire();
-    });
+    kineticLogo.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") fire(); });
   }
 
-  // ============================
-  // 3) Fade-in on scroll
-  // ============================
+  // =========================================================
+  // 3) REVEAL
+  // =========================================================
   const fadeEls = $$(".fade-in");
   if (fadeEls.length) {
     if (prefersReduced) {
@@ -96,34 +93,240 @@
     }
   }
 
-  // ============================
-  // 4) Hero video management
-  // ============================
-  const hero = $(".hero");
+  // =========================================================
+  // 4) THE FIX: VIDEO GOVERNOR (ONLY PLAY WHAT'S VISIBLE)
+  // =========================================================
+  const videos = $$("video");
+
+  // Always make videos cheap
+  videos.forEach((v) => {
+    v.muted = true;
+    v.playsInline = true;
+    v.setAttribute("playsinline", "");
+    v.setAttribute("muted", "");
+    v.setAttribute("webkit-playsinline", "");
+    // avoid eager loading for non-hero: we’ll still allow metadata
+    if (v.id !== "heroVideo") v.preload = "metadata";
+  });
+
+  // Helper safe play
+  const safePlay = async (v) => {
+    try { await v.play(); } catch (_) {}
+  };
+
+  // Pause everything (used on tab hide)
+  const pauseAll = () => { videos.forEach(v => { try { v.pause(); } catch(_) {} }); };
+
+  // If tab hidden, pause decoding (massive perf win)
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) pauseAll();
+  });
+
+  // We will keep ONE "active" video at a time (the most visible one)
+  let mostVisibleVideo = null;
+
+  // Track intersection ratios to decide which video should run
+  const ratios = new Map(); // video -> ratio
+
+  const videoIO = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      ratios.set(e.target, e.intersectionRatio);
+    }
+
+    // Pick the video with the highest ratio
+    let best = null;
+    let bestRatio = 0;
+
+    for (const [v, r] of ratios.entries()) {
+      if (r > bestRatio) {
+        best = v;
+        bestRatio = r;
+      }
+    }
+
+    // If nothing is visible enough, pause all
+    if (!best || bestRatio < 0.10) {
+      mostVisibleVideo = null;
+      pauseAll();
+      return;
+    }
+
+    // Switch active video
+    if (mostVisibleVideo !== best) {
+      mostVisibleVideo = best;
+
+      // Pause all others FIRST (prevents multi-decode)
+      videos.forEach((v) => { if (v !== best) { try { v.pause(); } catch(_) {} } });
+
+      // Play the active one
+      if (!document.hidden) safePlay(best);
+    } else {
+      // Keep it playing if it's supposed to be active
+      if (!document.hidden) safePlay(best);
+    }
+  }, {
+    threshold: [0, 0.10, 0.25, 0.50, 0.75, 0.90]
+  });
+
+  // Observe every video
+  videos.forEach(v => videoIO.observe(v));
+
+  // Also attempt play after load (for hero)
+  window.addEventListener("load", () => {
+    const hero = $("#heroVideo");
+    if (hero && !document.hidden) safePlay(hero);
+  }, { once: true });
+
+  // =========================================================
+  // 5) HERO FX: throttle hard (video smoothness priority)
+  // =========================================================
+  const ring1 = $(".ring.r1");
+  const ring2 = $(".ring.r2");
+  const ring3 = $(".ring.r3");
+  const canvas = $("#fxParticles");
+  const heroSection = $(".hero");
   const heroVideo = $("#heroVideo");
 
-  const tryPlay = () => heroVideo?.play?.().catch(() => {});
-  if (heroVideo) {
-    window.addEventListener("load", tryPlay, { once: true });
+  // Hard-disable FX on small screens or reduced motion
+  const fxDisabledHard = prefersReduced || smallScreen;
+
+  // OPTIONAL: disable particles while hero is visible (max smoothness)
+  // keep TRUE if you want absolute smooth hero.
+  const DISABLE_PARTICLES_WHILE_HERO_VISIBLE = true;
+
+  let heroVisible = true;
+  if (heroSection) {
+    const heroIO = new IntersectionObserver((entries) => {
+      for (const e of entries) heroVisible = e.isIntersecting;
+    }, { threshold: 0.12 });
+    heroIO.observe(heroSection);
   }
 
-  // ============================
-  // 5) Hero button sparkle coords
-  // ============================
-  const heroBtn = $(".hero-btn");
-  if (heroBtn) {
-    heroBtn.addEventListener("pointerdown", (e) => {
-      const r = heroBtn.getBoundingClientRect();
-      const x = ((e.clientX - r.left) / r.width) * 100;
-      const y = ((e.clientY - r.top) / r.height) * 100;
-      heroBtn.style.setProperty("--x", `${x}%`);
-      heroBtn.style.setProperty("--y", `${y}%`);
-    });
+  // Rings: cap to ~24fps (more than enough, way cheaper)
+  let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
+  let ringLast = 0;
+
+  if (!fxDisabledHard && (ring1 || ring2 || ring3)) {
+    window.addEventListener("mousemove", (e) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      targetX = (e.clientX - cx) / cx;
+      targetY = (e.clientY - cy) / cy;
+    }, { passive: true });
+
+    const ringTick = (ts) => {
+      requestAnimationFrame(ringTick);
+      if (!heroVisible) return;
+      if (ts - ringLast < 42) return; // ~24fps
+      ringLast = ts;
+
+      mouseX = lerp(mouseX, targetX, 0.10);
+      mouseY = lerp(mouseY, targetY, 0.10);
+
+      const s = clamp(window.scrollY / Math.max(1, window.innerHeight), 0, 1);
+      const strength = 0.55 * (1 - s) + 0.08;
+
+      if (ring1) ring1.style.translate = `${(mouseX * 10 * strength).toFixed(2)}px ${(mouseY * 7 * strength).toFixed(2)}px`;
+      if (ring2) ring2.style.translate = `${(mouseX * -8 * strength).toFixed(2)}px ${(mouseY * 9 * strength).toFixed(2)}px`;
+      if (ring3) ring3.style.translate = `${(mouseX * 6 * strength).toFixed(2)}px ${(mouseY * -6 * strength).toFixed(2)}px`;
+    };
+
+    requestAnimationFrame(ringTick);
   }
 
-  // ============================
-  // 6) Car Modal
-  // ============================
+  // Particles: 20–30fps with LOW DPR + dynamic count
+  if (!fxDisabledHard && canvas) {
+    const ctx = canvas.getContext("2d", { alpha: true });
+
+    let w = 0, h = 0;
+    let dpr = 1; // keep cheap always
+    let particles = [];
+    let targetCount = 28; // MUCH lower by default
+    let running = true;
+
+    const fpsCapMs = 50; // ~20fps
+    let lastFrameTs = 0;
+
+    const rand = (a, b) => a + Math.random() * (b - a);
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      w = Math.max(1, Math.floor(rect.width));
+      h = Math.max(1, Math.floor(rect.height));
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function makeParticles(count) {
+      const arr = [];
+      for (let i = 0; i < count; i++) {
+        arr.push({
+          x: rand(0, w),
+          y: rand(0, h),
+          r: rand(0.7, 1.6),
+          vx: rand(-0.10, 0.10),
+          vy: rand(-0.08, 0.14),
+          a: rand(0.10, 0.30),
+          hue: rand(200, 275)
+        });
+      }
+      return arr;
+    }
+
+    function draw(ts) {
+      requestAnimationFrame(draw);
+      if (!running) return;
+      if (!heroVisible) return;
+
+      // absolute priority: hero video
+      if (DISABLE_PARTICLES_WHILE_HERO_VISIBLE && heroVideo) return;
+
+      if (ts - lastFrameTs < fpsCapMs) return;
+      lastFrameTs = ts;
+
+      ctx.clearRect(0, 0, w, h);
+
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < -20) p.x = w + 20;
+        if (p.x > w + 20) p.x = -20;
+        if (p.y < -20) p.y = h + 20;
+        if (p.y > h + 20) p.y = -20;
+
+        ctx.beginPath();
+        ctx.fillStyle = `hsla(${p.hue}, 95%, 70%, ${p.a})`;
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Pause particles if hero not visible using IO
+    if (heroSection) {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          running = e.isIntersecting;
+        }
+      }, { threshold: 0.12 });
+      io.observe(heroSection);
+    }
+
+    resize();
+    particles = makeParticles(targetCount);
+
+    window.addEventListener("resize", () => {
+      resize();
+      particles = makeParticles(targetCount);
+    }, { passive: true });
+
+    requestAnimationFrame(draw);
+  }
+
+  // =========================================================
+  // 6) CAR MODAL
+  // =========================================================
   const modal = $("#car-modal");
   const modalClose = $(".modal-close", modal || document);
   const modalImg = $(".modal-img", modal || document);
@@ -176,19 +379,21 @@
   });
 
   modalClose?.addEventListener("click", closeModal);
+
   if (modal) {
     modal.addEventListener("click", (e) => {
       const content = $(".modal-content", modal);
       if (content && !content.contains(e.target)) closeModal();
     });
   }
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && modal?.classList.contains("show")) closeModal();
   });
 
-  // ============================
-  // 7) Tilt hover (desktop only)
-  // ============================
+  // =========================================================
+  // 7) TILT (desktop only)
+  // =========================================================
   if (!prefersReduced && hoverCapable) {
     carCards.forEach((card) => {
       let raf = 0;
@@ -212,213 +417,4 @@
       card.addEventListener("blur", reset);
     });
   }
-
-  // =========================================================
-  // 8) HERO FX PERFORMANCE SYSTEM (Particles + Rings)
-  // =========================================================
-
-  const ring1 = $(".ring.r1");
-  const ring2 = $(".ring.r2");
-  const ring3 = $(".ring.r3");
-  const canvas = $("#fxParticles");
-
-  // Helper: detect low-power / should-throttle
-  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  const saveData = !!conn?.saveData;
-  const effectiveType = conn?.effectiveType || "";
-  const lowNetwork = /2g/.test(effectiveType);
-  const smallScreen = window.matchMedia("(max-width: 720px)").matches;
-
-  // On mobile or reduced-motion, kill FX entirely (CSS also hides them, but we stop JS too)
-  const fxDisabledHard = prefersReduced || saveData || lowNetwork || smallScreen;
-
-  // Pause FX when hero not visible
-  let heroVisible = true;
-  if (hero) {
-    const heroIO = new IntersectionObserver((entries) => {
-      for (const e of entries) heroVisible = e.isIntersecting;
-      // Pause video when not visible too
-      if (heroVideo) {
-        if (heroVisible) tryPlay();
-        else heroVideo.pause();
-      }
-    }, { threshold: 0.12 });
-    heroIO.observe(hero);
-  }
-
-  // ----------------------------
-  // 8A) Rings parallax (cheap)
-  // ----------------------------
-  let mouseX = 0, mouseY = 0;
-  let targetX = 0, targetY = 0;
-
-  // We’ll only run ring/parallax updates at ~30fps, not 60fps
-  let ringLast = 0;
-
-  if (!fxDisabledHard && (ring1 || ring2 || ring3)) {
-    window.addEventListener("mousemove", (e) => {
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      targetX = (e.clientX - cx) / cx;
-      targetY = (e.clientY - cy) / cy;
-    }, { passive: true });
-
-    const ringTick = (ts) => {
-      if (!heroVisible) return requestAnimationFrame(ringTick); // still keep loop alive but do nothing
-      if (ts - ringLast < 33) return requestAnimationFrame(ringTick); // ~30fps cap
-      ringLast = ts;
-
-      mouseX = lerp(mouseX, targetX, 0.08);
-      mouseY = lerp(mouseY, targetY, 0.08);
-
-      // Reduce strength near top where video plays (lower compositing cost)
-      const s = clamp(window.scrollY / Math.max(1, window.innerHeight), 0, 1);
-      const strength = 0.65 * (1 - s) + 0.10; // 0.75 -> 0.10
-
-      if (ring1) ring1.style.translate = `${(mouseX * 12 * strength).toFixed(2)}px ${(mouseY * 8 * strength).toFixed(2)}px`;
-      if (ring2) ring2.style.translate = `${(mouseX * -9 * strength).toFixed(2)}px ${(mouseY * 10 * strength).toFixed(2)}px`;
-      if (ring3) ring3.style.translate = `${(mouseX * 7 * strength).toFixed(2)}px ${(mouseY * -7 * strength).toFixed(2)}px`;
-
-      requestAnimationFrame(ringTick);
-    };
-
-    requestAnimationFrame(ringTick);
-  }
-
-  // ----------------------------
-  // 8B) Particles — 30fps + dynamic quality scaling
-  // ----------------------------
-  if (!fxDisabledHard && canvas) {
-    const ctx = canvas.getContext("2d", { alpha: true });
-
-    let w = 0, h = 0;
-
-    // Dynamic resolution: start at 1.0 DPR for cheap draw
-    // If you have a monster GPU you can raise it later, but 1.0 is smooth.
-    let dpr = 1;
-
-    // Dynamic particle count
-    let targetCount = 55;
-    let particles = [];
-
-    // 30fps cap
-    const fpsCapMs = 33;
-    let lastFrameTs = 0;
-
-    // FPS monitor
-    let fpsSamples = [];
-    let lastFpsCheck = performance.now();
-
-    const rand = (a, b) => a + Math.random() * (b - a);
-
-    function resize() {
-      const rect = canvas.getBoundingClientRect();
-      w = Math.max(1, Math.floor(rect.width));
-      h = Math.max(1, Math.floor(rect.height));
-      canvas.width = Math.floor(w * dpr);
-      canvas.height = Math.floor(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    function makeParticles(count) {
-      const arr = [];
-      for (let i = 0; i < count; i++) {
-        arr.push({
-          x: rand(0, w),
-          y: rand(0, h),
-          r: rand(0.7, 1.8),
-          vx: rand(-0.14, 0.14),
-          vy: rand(-0.10, 0.18),
-          a: rand(0.10, 0.40),
-          hue: rand(195, 280)
-        });
-      }
-      return arr;
-    }
-
-    function ensureCount() {
-      if (particles.length === targetCount) return;
-      particles = makeParticles(targetCount);
-    }
-
-    // Quality manager: if FPS low, reduce count + resolution
-    function adjustQuality(avgFps) {
-      // If hero video is visible and we're struggling, prioritize video smoothness:
-      // reduce particles hard.
-      if (avgFps < 50) {
-        targetCount = Math.max(20, Math.floor(targetCount * 0.80));
-        dpr = 1; // keep cheap
-      }
-      if (avgFps < 40) {
-        targetCount = Math.max(14, Math.floor(targetCount * 0.75));
-        dpr = 1;
-      }
-      if (avgFps > 57 && targetCount < 60) {
-        // cautiously scale up if stable
-        targetCount = Math.min(60, targetCount + 2);
-      }
-      ensureCount();
-    }
-
-    // Optional: if you want MAX video smoothness, disable particles while hero is in view.
-    // Change to false if you want particles always.
-    const DISABLE_PARTICLES_WHILE_HERO_VISIBLE = true;
-
-    function draw(ts) {
-      requestAnimationFrame(draw);
-
-      if (!heroVisible) return; // offscreen: do nothing
-      if (DISABLE_PARTICLES_WHILE_HERO_VISIBLE && heroVideo) {
-        // Video exists and hero is visible: skip particle drawing entirely for max smoothness.
-        // (You still get rings/scanlines.)
-        return;
-      }
-
-      if (ts - lastFrameTs < fpsCapMs) return;
-      const dt = ts - lastFrameTs;
-      lastFrameTs = ts;
-
-      // FPS samples
-      const fps = 1000 / Math.max(1, dt);
-      fpsSamples.push(fps);
-
-      // Periodic quality adjustment (every ~1.2s)
-      const now = ts;
-      if (now - lastFpsCheck > 1200) {
-        const avg = fpsSamples.reduce((a, b) => a + b, 0) / Math.max(1, fpsSamples.length);
-        fpsSamples = [];
-        lastFpsCheck = now;
-        adjustQuality(avg);
-      }
-
-      ctx.clearRect(0, 0, w, h);
-
-      for (const p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.x < -20) p.x = w + 20;
-        if (p.x > w + 20) p.x = -20;
-        if (p.y < -20) p.y = h + 20;
-        if (p.y > h + 20) p.y = -20;
-
-        ctx.beginPath();
-        ctx.fillStyle = `hsla(${p.hue}, 95%, 70%, ${p.a})`;
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    // Init
-    resize();
-    particles = makeParticles(targetCount);
-
-    window.addEventListener("resize", () => {
-      resize();
-      particles = makeParticles(targetCount);
-    }, { passive: true });
-
-    requestAnimationFrame(draw);
-  }
-
 })();
