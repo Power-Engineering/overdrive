@@ -309,7 +309,7 @@
     const dpr = Math.min(2, window.devicePixelRatio || 1);
 
     const particles = [];
-    const COUNT = 90;
+    const COUNT = 45;
     let running = true;
 
     const resize = () => {
