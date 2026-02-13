@@ -1,6 +1,6 @@
 /* =========================================
-   OVERDRIVE main.js — Premium UX upgrade
-   (Full replacement, compatible with your existing classes)
+   OVERDRIVE main.js — Cinematic Motion Layer
+   Full replacement
    ========================================= */
 
 (() => {
@@ -8,6 +8,12 @@
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const hoverCapable = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
   // ----------------------------
   // 1) Mobile Nav (hamburger)
@@ -23,7 +29,6 @@
   };
 
   if (hamburger && navLinks) {
-    // Ensure ARIA wiring exists
     if (!hamburger.hasAttribute("aria-expanded")) hamburger.setAttribute("aria-expanded", "false");
     if (navLinks.id) hamburger.setAttribute("aria-controls", navLinks.id);
 
@@ -32,23 +37,18 @@
       setNavOpen(open);
     });
 
-    // Close nav when clicking a link
     navLinks.addEventListener("click", (e) => {
-      const a = e.target.closest("a");
-      if (!a) return;
-      setNavOpen(false);
+      if (e.target.closest("a")) setNavOpen(false);
     });
 
-    // Close nav on Escape
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") setNavOpen(false);
     });
 
-    // Close nav when clicking outside (mobile)
     document.addEventListener("click", (e) => {
       if (!navLinks.classList.contains("open")) return;
-      const clickedInside = navLinks.contains(e.target) || hamburger.contains(e.target);
-      if (!clickedInside) setNavOpen(false);
+      const inside = navLinks.contains(e.target) || hamburger.contains(e.target);
+      if (!inside) setNavOpen(false);
     });
   }
 
@@ -56,34 +56,27 @@
   // 2) Kinetic Text (hero title)
   // ----------------------------
   const kinetic = $(".kinetic-text");
-  if (kinetic) {
-    // Only wrap once
-    if (!kinetic.dataset.kineticDone) {
-      kinetic.dataset.kineticDone = "1";
+  if (kinetic && !kinetic.dataset.kineticDone) {
+    kinetic.dataset.kineticDone = "1";
+    const text = kinetic.textContent || "";
+    kinetic.textContent = "";
 
-      const text = kinetic.textContent || "";
-      kinetic.textContent = "";
-
-      // Create spans per character for animation
-      [...text].forEach((ch, i) => {
-        const span = document.createElement("span");
-        span.textContent = ch;
-        span.style.animationDelay = `${i * 0.035}s`;
-        kinetic.appendChild(span);
-      });
-    }
+    [...text].forEach((ch, i) => {
+      const span = document.createElement("span");
+      span.textContent = ch;
+      span.style.animationDelay = `${i * 0.035}s`;
+      kinetic.appendChild(span);
+    });
   }
 
-  // Clicky logo micro-interaction (keeps your old class)
+  // Logo click micro-interaction
   const kineticLogo = $(".kinetic-logo");
   if (kineticLogo) {
     const fire = () => {
       kineticLogo.classList.add("clicked");
-      window.setTimeout(() => kineticLogo.classList.remove("clicked"), 220);
-      // Optional: scroll to top on logo click if it’s meant to be “home”
-      // window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => kineticLogo.classList.remove("clicked"), 220);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     };
-
     kineticLogo.addEventListener("click", fire);
     kineticLogo.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") fire();
@@ -91,12 +84,10 @@
   }
 
   // ----------------------------
-  // 3) Fade-in on scroll (elements with .fade-in)
+  // 3) Scroll Reveal (fade-in)
   // ----------------------------
   const fadeEls = $$(".fade-in");
   if (fadeEls.length) {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
     if (prefersReduced) {
       fadeEls.forEach((el) => el.classList.add("visible"));
     } else {
@@ -105,18 +96,38 @@
           for (const entry of entries) {
             if (!entry.isIntersecting) continue;
             entry.target.classList.add("visible");
-            io.unobserve(entry.target); // reveal once
+            io.unobserve(entry.target);
           }
         },
         { threshold: 0.12 }
       );
-
       fadeEls.forEach((el) => io.observe(el));
     }
   }
 
   // ----------------------------
-  // 4) Hero button sparkle coordinates (optional polish)
+  // 4) Hero video play/pause management (smoothness)
+  // ----------------------------
+  const heroVideo = $("#heroVideo");
+  if (heroVideo) {
+    const tryPlay = () => heroVideo.play().catch(() => {});
+    window.addEventListener("load", tryPlay, { once: true });
+
+    // Pause when offscreen to reduce stutter later
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) tryPlay();
+          else heroVideo.pause();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    io.observe(heroVideo);
+  }
+
+  // ----------------------------
+  // 5) Hero button sparkle coords
   // ----------------------------
   const heroBtn = $(".hero-btn");
   if (heroBtn) {
@@ -130,7 +141,7 @@
   }
 
   // ----------------------------
-  // 5) Car Modal (cards -> modal)
+  // 6) Car Modal
   // ----------------------------
   const modal = $("#car-modal");
   const modalClose = $(".modal-close", modal || document);
@@ -144,14 +155,21 @@
     "Nissan 370Z": "Balanced power and control. A strong all-rounder that adapts to hazards and mod paths.",
     "Audi TT": "Sharp handling with smooth acceleration. Clean tempo, reliable grip, and efficient upgrades.",
     "Ford Mustang GT": "Big power and loud presence. High-risk, high-reward aggression with explosive bursts.",
-    "Mazda MX-5": "Classic lightweight momentum. Wins through consistency, drafting, and smart deck discipline."
+    "Mazda MX-5": "Lightweight momentum machine. Wins through consistency, drafting, and clean deck discipline."
   };
 
   const openModal = (card) => {
     if (!modal) return;
 
-    const carName = card?.dataset?.car || card?.querySelector("h3")?.textContent?.trim() || "Car";
-    const imgSrc = card?.dataset?.img || card?.querySelector("img")?.getAttribute("src") || "";
+    const carName =
+      card?.dataset?.car ||
+      card?.querySelector("h3")?.textContent?.trim() ||
+      "Car";
+
+    const imgSrc =
+      card?.dataset?.img ||
+      card?.querySelector("img")?.getAttribute("src") ||
+      "";
 
     if (modalTitle) modalTitle.textContent = carName;
     if (modalDesc) modalDesc.textContent = carDescriptions[carName] || "Choose your upgrades. Adapt to hazards. Take the lead.";
@@ -162,9 +180,7 @@
 
     modal.classList.add("show");
     document.body.style.overflow = "hidden";
-
-    // Focus close button for accessibility
-    if (modalClose) modalClose.focus();
+    modalClose?.focus?.();
   };
 
   const closeModal = () => {
@@ -175,7 +191,6 @@
 
   carCards.forEach((card) => {
     card.addEventListener("click", () => openModal(card));
-    // keyboard accessible
     card.setAttribute("tabindex", card.getAttribute("tabindex") || "0");
     card.setAttribute("role", card.getAttribute("role") || "button");
     card.addEventListener("keydown", (e) => {
@@ -186,9 +201,8 @@
     });
   });
 
-  if (modalClose) modalClose.addEventListener("click", closeModal);
+  modalClose?.addEventListener("click", closeModal);
 
-  // Click outside modal-content closes it
   if (modal) {
     modal.addEventListener("click", (e) => {
       const content = $(".modal-content", modal);
@@ -196,19 +210,14 @@
     });
   }
 
-  // Escape closes modal
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && modal?.classList.contains("show")) closeModal();
   });
 
   // ----------------------------
-  // 6) “Premium” Tilt Hover for car cards (lightweight)
+  // 7) Premium Tilt Hover (lightweight)
   // ----------------------------
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  if (!prefersReduced) {
-    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-
+  if (!prefersReduced && hoverCapable) {
     carCards.forEach((card) => {
       let raf = 0;
 
@@ -217,11 +226,11 @@
 
         raf = requestAnimationFrame(() => {
           const rect = card.getBoundingClientRect();
-          const px = (e.clientX - rect.left) / rect.width;   // 0..1
-          const py = (e.clientY - rect.top) / rect.height;  // 0..1
+          const px = (e.clientX - rect.left) / rect.width;
+          const py = (e.clientY - rect.top) / rect.height;
 
-          const rx = clamp((0.5 - py) * 10, -8, 8); // rotateX
-          const ry = clamp((px - 0.5) * 12, -10, 10); // rotateY
+          const rx = clamp((0.5 - py) * 10, -8, 8);
+          const ry = clamp((px - 0.5) * 12, -10, 10);
 
           card.style.transform = `translateY(-4px) rotateX(${rx}deg) rotateY(${ry}deg)`;
         });
@@ -232,13 +241,147 @@
         card.style.transform = "";
       };
 
-      // Only tilt on hover-capable devices
-      const hoverCapable = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-      if (!hoverCapable) return;
-
       card.addEventListener("mousemove", onMove);
       card.addEventListener("mouseleave", reset);
       card.addEventListener("blur", reset);
     });
+  }
+
+  // ----------------------------
+  // 8) Cinematic Rings + Parallax (WOW factor)
+  // ----------------------------
+  const ring1 = $(".ring.r1");
+  const ring2 = $(".ring.r2");
+  const ring3 = $(".ring.r3");
+
+  // We’ll “nudge” transforms on top of CSS spin animations with translate offsets only,
+  // so the animation stays cheap (no heavy 3D).
+  let mouseX = 0, mouseY = 0;
+  let targetX = 0, targetY = 0;
+
+  if (!prefersReduced && (ring1 || ring2 || ring3)) {
+    window.addEventListener("mousemove", (e) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      targetX = (e.clientX - cx) / cx; // -1..1
+      targetY = (e.clientY - cy) / cy; // -1..1
+    }, { passive: true });
+
+    const onScroll = () => {
+      // scroll progress 0..1 through first viewport
+      const s = clamp(window.scrollY / Math.max(1, window.innerHeight), 0, 1);
+
+      // higher = more movement near top, settles as you scroll down
+      const strength = 1 - s;
+
+      const x1 = mouseX * 16 * strength;
+      const y1 = mouseY * 10 * strength;
+      const x2 = mouseX * -10 * strength;
+      const y2 = mouseY * 14 * strength;
+      const x3 = mouseX * 8 * strength;
+      const y3 = mouseY * -8 * strength;
+
+      if (ring1) ring1.style.translate = `${x1}px ${y1}px`;
+      if (ring2) ring2.style.translate = `${x2}px ${y2}px`;
+      if (ring3) ring3.style.translate = `${x3}px ${y3}px`;
+    };
+
+    const tick = () => {
+      // Smooth mouse easing
+      mouseX = lerp(mouseX, targetX, 0.08);
+      mouseY = lerp(mouseY, targetY, 0.08);
+
+      onScroll();
+      requestAnimationFrame(tick);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    tick();
+  }
+
+  // ----------------------------
+  // 9) Particle Canvas (fast “premium dust”)
+  // ----------------------------
+  const canvas = $("#fxParticles");
+  if (!prefersReduced && canvas) {
+    const ctx = canvas.getContext("2d", { alpha: true });
+    let w = 0, h = 0;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+
+    const particles = [];
+    const COUNT = 90;
+    let running = true;
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      w = Math.max(1, Math.floor(rect.width));
+      h = Math.max(1, Math.floor(rect.height));
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    const rand = (a, b) => a + Math.random() * (b - a);
+
+    const init = () => {
+      particles.length = 0;
+      for (let i = 0; i < COUNT; i++) {
+        particles.push({
+          x: rand(0, w),
+          y: rand(0, h),
+          r: rand(0.6, 2.1),
+          vx: rand(-0.18, 0.18),
+          vy: rand(-0.12, 0.22),
+          a: rand(0.14, 0.52),
+          hue: rand(190, 280)
+        });
+      }
+    };
+
+    const draw = () => {
+      if (!running) return;
+      ctx.clearRect(0, 0, w, h);
+
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < -20) p.x = w + 20;
+        if (p.x > w + 20) p.x = -20;
+        if (p.y < -20) p.y = h + 20;
+        if (p.y > h + 20) p.y = -20;
+
+        ctx.beginPath();
+        ctx.fillStyle = `hsla(${p.hue}, 95%, 70%, ${p.a})`;
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      requestAnimationFrame(draw);
+    };
+
+    // Pause particles when hero not visible (performance)
+    const hero = $(".hero");
+    if (hero) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            running = e.isIntersecting;
+            if (running) requestAnimationFrame(draw);
+          }
+        },
+        { threshold: 0.12 }
+      );
+      io.observe(hero);
+    }
+
+    resize();
+    init();
+    requestAnimationFrame(draw);
+
+    window.addEventListener("resize", () => {
+      resize();
+      init();
+    }, { passive: true });
   }
 })();
