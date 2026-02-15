@@ -1,10 +1,7 @@
 /* =========================================================
-   OVERDRIVE — FINAL style.css (Futuristic / Award-tier / Fast)
-   Built for the NEW index.html you pasted.
-   - Clean hero: no heavy FX layers over video
-   - Premium glass UI, neon accents, tasteful motion
-   - Mobile-first + perfect car swipe carousel
-   - No backdrop-filter on hero overlay (keeps hero buttery)
+   OVERDRIVE — style.css (clean + fast + GitHub Pages safe)
+   - Project-pages safe paths (CSS itself doesn't set paths except data-uri grain)
+   - Premium glass UI + neon accents
    ========================================================= */
 
 /* -------------------------
@@ -33,6 +30,10 @@
   --max: 1120px;
 
   --ease: cubic-bezier(.22,.61,.36,1);
+
+  /* cursor glow hook (JS can update) */
+  --mx: 50vw;
+  --my: 30vh;
 }
 
 /* -------------------------
@@ -84,11 +85,7 @@ body::after{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
 }
 
-/* Subtle cursor glow hook (JS sets --mx/--my if you choose later) */
-:root{
-  --mx: 50vw;
-  --my: 30vh;
-}
+/* Subtle cursor glow */
 body::before{
   content:"";
   position:fixed;
@@ -136,6 +133,8 @@ body::before{
   text-transform: uppercase;
 }
 
+.sectionPad{ padding: 88px 0; }
+
 /* -------------------------
    NAVBAR
 ------------------------- */
@@ -162,7 +161,7 @@ body::before{
   letter-spacing: .18em;
   cursor:pointer;
   user-select:none;
-  position: relative; /* for O bubbles canvas */
+  position: relative;
   display:inline-block;
   line-height: 1;
   isolation:isolate;
@@ -191,7 +190,7 @@ body::before{
   text-shadow: 0 0 18px rgba(124,92,255,.35), 0 0 10px rgba(25,211,255,.20);
 }
 
-/* Canvas injected by JS (logo bubble emitter) */
+/* Canvas injected by JS */
 .logo canvas.logo-bubbles{
   position:absolute;
   inset:-12px -16px -16px -16px;
@@ -285,7 +284,7 @@ body::before{
 }
 
 /* -------------------------
-   HERO (CLEAN + FUTURE UI)
+   HERO
 ------------------------- */
 .hero{
   position:relative;
@@ -298,7 +297,6 @@ body::before{
   isolation:isolate;
 }
 
-/* Hero video: direct present */
 .hero-video{
   position:absolute;
   inset:0;
@@ -312,7 +310,6 @@ body::before{
   will-change:auto !important;
 }
 
-/* Cinematic overlay: NOT radial -> no “ring/circle” artifact */
 .hero::before{
   content:"";
   position:absolute;
@@ -325,7 +322,6 @@ body::before{
     linear-gradient(300deg, rgba(25,211,255,.10), transparent 62%);
 }
 
-/* Hero overlay card (NO blur: keeps hero buttery) */
 .hero .overlay.glass{
   position: relative;
   z-index: 2;
@@ -338,7 +334,6 @@ body::before{
   overflow:hidden;
 }
 
-/* Neon frame (cheap but looks expensive) */
 .hero .overlay.glass::before{
   content:"";
   position:absolute;
@@ -381,7 +376,6 @@ body::before{
     0 0 38px rgba(25,211,255,.10);
 }
 
-/* kinetic spans (from JS) */
 .kinetic-text{ user-select:none; cursor: default; overflow:hidden; display:inline-block; }
 .kinetic-text span{
   display:inline-block;
@@ -508,10 +502,8 @@ body::before{
 }
 
 /* -------------------------
-   SECTIONS
+   SECTIONS / FEATURES
 ------------------------- */
-.sectionPad{ padding: 88px 0; }
-
 .sectionHead{
   display:flex;
   align-items:flex-end;
@@ -530,7 +522,6 @@ body::before{
   max-width: 62ch;
 }
 
-/* Features */
 .featureGrid{
   display:grid;
   grid-template-columns: repeat(12, 1fr);
@@ -570,7 +561,6 @@ body::before{
   color: rgba(255,255,255,.78);
   font-weight: 600;
 }
-
 .feature:hover{
   transform: translateY(-6px);
   border-color: rgba(255,255,255,.22);
@@ -596,7 +586,7 @@ body::before{
 }
 
 /* -------------------------
-   CARS (award-tier carousel)
+   CARS (carousel)
 ------------------------- */
 .cars-bg-art{
   position:relative;
@@ -645,7 +635,6 @@ body::before{
   text-shadow: 0 0 22px rgba(124,92,255,.12);
 }
 
-/* Swipe carousel */
 .car-row-noscroll{
   display:flex;
   align-items:stretch;
@@ -672,8 +661,7 @@ body::before{
   border-radius: 999px;
 }
 
-/* =============== CAR CARDS — FUTURE TIER =============== */
-
+/* Car cards */
 .car-card.glass{
   border-radius: 22px;
   padding: 1.65rem 1.1rem 1.2rem;
@@ -692,15 +680,13 @@ body::before{
   overflow:hidden;
   box-shadow: 0 12px 36px rgba(0,0,0,.45);
 
-  /* tilt (JS sets --rx/--ry) */
   transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(0);
   transition:
-    transform .18s cubic-bezier(.22,.61,.36,1),
-    box-shadow .22s cubic-bezier(.22,.61,.36,1),
-    border-color .22s cubic-bezier(.22,.61,.36,1);
+    transform .18s var(--ease),
+    box-shadow .22s var(--ease),
+    border-color .22s var(--ease);
 }
 
-/* Animated gradient frame */
 .car-card.glass::after{
   content:"";
   position:absolute;
@@ -708,13 +694,12 @@ body::before{
   border-radius: inherit;
   background: linear-gradient(90deg, rgba(124,92,255,.95), rgba(25,211,255,.85), rgba(56,249,165,.55), rgba(124,92,255,.95));
   background-size: 260% 100%;
-  opacity: .0;
+  opacity: 0;
   filter: blur(10px);
   z-index:0;
-  transition: opacity .22s cubic-bezier(.22,.61,.36,1);
+  transition: opacity .22s var(--ease);
 }
 
-/* Soft internal lighting */
 .car-card.glass::before{
   content:"";
   position:absolute;
@@ -728,7 +713,6 @@ body::before{
   z-index:0;
 }
 
-/* sheen sweep */
 .car-card.glass .sheen{
   position:absolute;
   inset:-40% -60%;
@@ -746,20 +730,16 @@ body::before{
   box-shadow: 0 22px 70px rgba(0,0,0,.60);
   transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-6px);
 }
-
 .car-card.glass:hover::after{
   opacity: .28;
   animation: cardFrame 1.3s linear infinite;
 }
-
 .car-card.glass:hover .sheen{
   opacity:1;
-  animation: sheen 1.2s cubic-bezier(.22,.61,.36,1) infinite;
+  animation: sheen 1.2s var(--ease) infinite;
 }
 
-@keyframes cardFrame{
-  to{ background-position: 260% 0; }
-}
+@keyframes cardFrame{ to{ background-position: 260% 0; } }
 @keyframes sheen{
   0%{ transform: translateX(-35%) rotate(12deg); }
   100%{ transform: translateX(35%) rotate(12deg); }
@@ -771,7 +751,7 @@ body::before{
   border-radius: 14px;
   margin-bottom: 1.05rem;
   box-shadow: 0 14px 38px rgba(0,0,0,.55);
-  transition: transform .22s cubic-bezier(.22,.61,.36,1), filter .22s cubic-bezier(.22,.61,.36,1);
+  transition: transform .22s var(--ease), filter .22s var(--ease);
   pointer-events:none;
   user-select:none;
 }
@@ -779,7 +759,6 @@ body::before{
   transform: translateY(-2px) scale(1.01);
   filter: saturate(1.08) contrast(1.05);
 }
-
 
 /* -------------------------
    SECTION HERO (Modshop/Hazards)
@@ -802,10 +781,6 @@ body::before{
   height:100%;
   object-fit: cover;
   z-index:0;
-  opacity:1;
-  transform:none;
-  filter:none;
-  will-change:auto;
 }
 
 .section-hero::before{
@@ -830,8 +805,6 @@ body::before{
   border: 1px solid rgba(255,255,255,.14);
   box-shadow: var(--shadow);
   text-align:center;
-
-  /* blur ok here: not over hero video */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -884,6 +857,10 @@ body::before{
 }
 .ctaBand p{ margin-top:6px; color: var(--muted); max-width: 62ch; }
 .big-btn{ font-size: 1.12rem; padding: 1.0rem 2.0rem; }
+
+@media (max-width: 780px){
+  .ctaBand{ flex-direction:column; align-items:flex-start; }
+}
 
 /* -------------------------
    FOOTER
@@ -998,10 +975,6 @@ footer a{
 ------------------------- */
 @media (max-width: 980px){
   .feature{ grid-column: span 6; }
-}
-
-@media (max-width: 780px){
-  .ctaBand{ flex-direction:column; align-items:flex-start; }
 }
 
 @media (max-width: 720px){
