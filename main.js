@@ -1,14 +1,26 @@
+/* main.js — Overdrive
+   Drop-in replacement for https://github.com/Power-Engineering/overdrive
+
+   Fixes:
+   - Section videos (modshop/hazards) were falling back to images because the previous
+     "auto-fix" logic would force fallback after 2 seconds.
+   - Adds lazy-loading for section videos so they load when scrolled near,
+     without breaking autoplay policies.
+*/
+
 document.addEventListener("DOMContentLoaded", () => {
   "use strict";
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const finePointer = window.matchMedia("(pointer:fine)").matches;
 
   /* =========================================================
      Helpers
   ========================================================= */
+
   const slug = (s) =>
     String(s || "")
       .toLowerCase()
@@ -23,7 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const img = new Image();
       img.onload = () => resolve(true);
       img.onerror = () => resolve(false);
-      img.src = url + (url.includes("?") ? "" : `?v=${Date.now()}`); // bypass cache for checking
+      // bypass cache for checking
+      img.src = url + (url.includes("?") ? "" : `?v=${Date.now()}`);
     });
   }
 
@@ -39,11 +52,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!videoEl) return false;
 
     // Clear existing sources
-    videoEl.pause();
-    videoEl.querySelectorAll("source").forEach(s => s.remove());
+    try {
+      videoEl.pause();
+    } catch {}
+    videoEl.querySelectorAll("source").forEach((s) => s.remove());
 
-    // Add candidates (mp4 first; browser will ignore unsupported)
-    urls.forEach(u => {
+    // Add candidates (browser will ignore unsupported)
+    urls.forEach((u) => {
       const s = document.createElement("source");
       s.src = u;
       if (u.endsWith(".webm")) s.type = "video/webm";
@@ -52,13 +67,63 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Force reload
-    try { videoEl.load(); } catch {}
+    try {
+      videoEl.load();
+    } catch {}
     return true;
+  }
+
+  async function urlExists(url) {
+    // GitHub Pages supports HEAD; if anything fails, we treat as non-existent.
+    try {
+      const res = await fetch(url, { method: "HEAD", cache: "no-store" });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  async function pickFirstWorkingVideo(urls) {
+    for (const u of urls) {
+      // eslint-disable-next-line no-await-in-loop
+      if (await urlExists(u)) return u;
+    }
+    return null;
+  }
+
+  function setVideoBehavior(videoEl) {
+    // Autoplay requirements: muted + playsInline
+    videoEl.muted = true;
+    videoEl.playsInline = true;
+    videoEl.loop = true;
+    videoEl.autoplay = true;
+
+    // Optional: prevent eager download until we decide to load
+    // (We will call load() when in-view)
+    if (!videoEl.getAttribute("preload")) videoEl.setAttribute("preload", "none");
+  }
+
+  function fallbackToImage(videoEl) {
+    const fallbackImg = videoEl.getAttribute("data-fallback-img") || videoEl.getAttribute("poster");
+    const parent = videoEl.parentElement;
+
+    try {
+      videoEl.pause();
+    } catch {}
+
+    videoEl.style.display = "none";
+
+    if (parent && fallbackImg) {
+      parent.style.backgroundImage = `url("${fallbackImg}")`;
+      parent.style.backgroundSize = "cover";
+      parent.style.backgroundPosition = "center";
+    }
   }
 
   /* =========================================================
      MOBILE NAV
   ========================================================= */
+
   const hamburger = $(".hamburger");
   const navLinks = $(".nav-links");
 
@@ -78,56 +143,161 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-// =========================================================
-// VIDEO GOVERNOR (hero only)
-// Keep hero ultra-smooth, but DO NOT mess with section videos
-// =========================================================
-const heroVideo = document.getElementById("heroVideo");
+  /* =========================================================
+     VIDEO GOVERNOR (hero only)
+     Keep hero ultra-smooth, but DO NOT pause section videos here.
+  ========================================================= */
 
-if (heroVideo) {
-  heroVideo.muted = true;
-  heroVideo.playsInline = true;
+  const heroVideo = document.getElementById("heroVideo");
+  if (heroVideo) {
+    heroVideo.muted = true;
+    heroVideo.playsInline = true;
 
-  const heroObs = new IntersectionObserver(
-    (entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) heroVideo.play().catch(() => {});
-        else heroVideo.pause();
+    const heroObs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) heroVideo.play().catch(() => {});
+          else heroVideo.pause();
+        }
+      },
+      { threshold: 0.35 }
+    );
+
+    heroObs.observe(heroVideo);
+  }
+
+  /* =========================================================
+     SECTION VIDEOS (lazy-load + robust source selection)
+     This avoids the "needs scroll to load" interference, and
+     avoids the old 2-second forced fallback.
+  ========================================================= */
+
+  function buildSectionVideoCandidates(sectionId, baseName) {
+    return uniq([
+      `./assets/${baseName}.mp4`,
+      `./assets/${baseName}.webm`,
+      `./assets/${baseName}-bg.mp4`,
+      `./assets/${baseName}-bg.webm`,
+      `./assets/${baseName}cover.mp4`,
+      `./assets/${baseName}cover.webm`,
+      `./assets/${baseName}-cover.mp4`,
+      `./assets/${baseName}-cover.webm`,
+      `./assets/${sectionId}.mp4`,
+      `./assets/${sectionId}.webm`,
+    ]);
+  }
+
+  async function ensureSectionVideo(sectionId, baseName) {
+    const section = document.getElementById(sectionId);
+    const videoEl = section?.querySelector("video");
+    if (!videoEl) return;
+
+    setVideoBehavior(videoEl);
+
+    // If it already has a valid <source>, don't stomp it
+    const existing = videoEl.querySelector("source")?.getAttribute("src");
+    if (existing) {
+      // We still want to play when it’s ready / user interacts
+      videoEl.addEventListener("loadeddata", () => videoEl.play().catch(() => {}), { once: true });
+      const retry = () => videoEl.play().catch(() => {});
+      window.addEventListener("pointerdown", retry, { once: true, passive: true });
+      return;
+    }
+
+    const candidates = buildSectionVideoCandidates(sectionId, baseName);
+
+    // Pick the first file that actually exists
+    const found = await pickFirstWorkingVideo(candidates);
+
+    if (!found) {
+      fallbackToImage(videoEl);
+      return;
+    }
+
+    // Use the found URL as the only source (fast + predictable)
+    trySetVideoSources(videoEl, [found]);
+
+    // Try to play once there is data
+    const playNow = () => videoEl.play().catch(() => {});
+    videoEl.addEventListener("loadeddata", playNow, { once: true });
+    videoEl.addEventListener("canplay", playNow, { once: true });
+
+    // If autoplay is blocked, retry on first user gesture
+    const retry = () => videoEl.play().catch(() => {});
+    window.addEventListener("pointerdown", retry, { once: true, passive: true });
+
+    // If it errors after choosing a real file, fall back to image
+    videoEl.addEventListener(
+      "error",
+      () => {
+        fallbackToImage(videoEl);
+      },
+      { once: true }
+    );
+  }
+
+  function lazyLoadSectionVideos() {
+    const targets = [
+      { id: "modshop", base: "modshop" },
+      { id: "hazards", base: "hazards" },
+    ];
+
+    // If reduced motion, just load immediately (less scroll-work)
+    if (prefersReduced || !("IntersectionObserver" in window)) {
+      targets.forEach((t) => ensureSectionVideo(t.id, t.base).catch(() => {}));
+      return;
+    }
+
+    const obs = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+
+          const id = e.target.id;
+          const match = targets.find((t) => t.id === id);
+          if (match) ensureSectionVideo(match.id, match.base).catch(() => {});
+
+          observer.unobserve(e.target);
+        });
+      },
+      {
+        // Start loading a bit before it enters view
+        rootMargin: "600px 0px",
+        threshold: 0.01,
       }
-    },
-    { threshold: 0.35 }
-  );
-  heroObs.observe(heroVideo);
-}
+    );
 
-// Section videos: just ensure they try to play once they can
-document.querySelectorAll(".section-hero .full-bg-video").forEach(v => {
-  v.muted = true;
-  v.playsInline = true;
-  v.loop = true;
-  v.autoplay = true;
+    targets.forEach((t) => {
+      const el = document.getElementById(t.id);
+      if (el) obs.observe(el);
+    });
+  }
 
-  // Attempt play when enough data is ready
-  v.addEventListener("canplay", () => v.play().catch(() => {}), { once: true });
+  // Make sure section videos attempt to play once they can (even if sources are in HTML)
+  document.querySelectorAll(".section-hero .full-bg-video").forEach((v) => {
+    setVideoBehavior(v);
+    v.addEventListener("loadeddata", () => v.play().catch(() => {}), { once: true });
+    const retry = () => v.play().catch(() => {});
+    window.addEventListener("pointerdown", retry, { once: true, passive: true });
+  });
 
-  // If the browser blocks autoplay for any reason, try again on first user interaction
-  const retry = () => v.play().catch(() => {});
-  window.addEventListener("pointerdown", retry, { once: true, passive: true });
-});
+  lazyLoadSectionVideos();
 
   /* =========================================================
      FADE-IN
   ========================================================= */
+
   const fadeEls = $$(".fade-in");
   const fadeObserver = new IntersectionObserver(
-    (entries) => entries.forEach(e => e.isIntersecting && e.target.classList.add("visible")),
+    (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add("visible")),
     { threshold: 0.15 }
   );
-  fadeEls.forEach(el => fadeObserver.observe(el));
+  fadeEls.forEach((el) => fadeObserver.observe(el));
 
   /* =========================================================
      CAR MODAL
   ========================================================= */
+
   const modal = $("#car-modal");
   const modalImg = $(".modal-img");
   const modalTitle = $(".modal-title");
@@ -142,21 +312,24 @@ document.querySelectorAll(".section-hero .full-bg-video").forEach(v => {
 
   if (modalClose) modalClose.addEventListener("click", closeModal);
   if (modal) {
-    modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
-    window.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+    });
   }
 
   /* =========================================================
-     AUTO-FIX CAR IMAGES (Mustang/Mazda + all cars)
-     Your site currently tries /assets/cars/*.png and 404s. :contentReference[oaicite:1]{index=1}
-     This will try likely filenames and folders until it finds one.
+     AUTO-FIX CAR IMAGES
   ========================================================= */
+
   async function fixCarImages() {
     const cards = $$(".car-card");
+
     for (const card of cards) {
       const name = card.dataset.car || card.querySelector("h3")?.textContent || "car";
       const s = slug(name);
-
       const imgEl = card.querySelector("img");
       if (!imgEl) continue;
 
@@ -185,44 +358,44 @@ document.querySelectorAll(".section-hero .full-bg-video").forEach(v => {
         `./assets/car-${s.replace("mazda-", "")}.jpg`,
         `./assets/car-${s.replace("mazda-", "")}.png`,
 
-        // if you ever add a folder later
+        // optional folder later
         `./assets/cars/${s}.jpg`,
         `./assets/cars/${s}.png`,
         `./assets/cars/${s}.webp`,
       ]);
 
-      // If it already has a working image, keep it
+      // If it already has a non-placeholder image, keep it
       const current = imgEl.getAttribute("src");
       if (current && current !== "./assets/hero-bg.jpg") {
-        // best effort: leave
-        continue;
-      }
-
-      // eslint-disable-next-line no-await-in-loop
-      const found = await pickFirstWorkingImage(candidates);
-      if (found) {
-        imgEl.src = found;
-        card.dataset.img = found; // modal will use this
+        // Keep current
       } else {
-        // fallback stays hero-bg.jpg (no broken image)
-        card.dataset.img = "./assets/hero-bg.jpg";
+        // eslint-disable-next-line no-await-in-loop
+        const found = await pickFirstWorkingImage(candidates);
+        if (found) {
+          imgEl.src = found;
+          card.dataset.img = found;
+        } else {
+          card.dataset.img = "./assets/hero-bg.jpg";
+        }
       }
 
-      // Modal click
-      card.addEventListener("click", () => {
-        if (!modal || !modalImg || !modalTitle || !modalDesc) return;
-
-        const img = card.dataset.img || imgEl.src || "./assets/hero-bg.jpg";
-
-        modalImg.src = img;
-        modalImg.alt = name;
-        modalTitle.textContent = name;
-        modalDesc.textContent =
-          `${name} is built for precision racing in OVERDRIVE. Choose upgrades carefully, control the draft, and time your boosts for maximum impact.`;
-
-        modal.classList.add("show");
-        modal.setAttribute("aria-hidden", "false");
-      }, { once: true });
+      // Modal click (once)
+      card.addEventListener(
+        "click",
+        () => {
+          if (!modal || !modalImg || !modalTitle || !modalDesc) return;
+          const img = card.dataset.img || imgEl.src || "./assets/hero-bg.jpg";
+          modalImg.src = img;
+          modalImg.alt = name;
+          modalTitle.textContent = name;
+          modalDesc.textContent =
+            `${name} is built for precision racing in OVERDRIVE.\n` +
+            `Choose upgrades carefully, control the draft, and time your boosts for maximum impact.`;
+          modal.classList.add("show");
+          modal.setAttribute("aria-hidden", "false");
+        },
+        { once: true }
+      );
     }
   }
 
@@ -231,27 +404,33 @@ document.querySelectorAll(".section-hero .full-bg-video").forEach(v => {
   /* =========================================================
      CAR CARD TILT (desktop only)
   ========================================================= */
+
   if (!prefersReduced && finePointer) {
     const cards = $$(".car-card.glass");
     let raf = 0;
     let active = null;
-    let lastX = 0, lastY = 0;
+    let lastX = 0,
+      lastY = 0;
 
     function updateTilt() {
       raf = 0;
       if (!active) return;
+
       const r = active.getBoundingClientRect();
       const cx = r.left + r.width / 2;
       const cy = r.top + r.height / 2;
       const dx = (lastX - cx) / r.width;
       const dy = (lastY - cy) / r.height;
+
       const max = 8;
       active.style.setProperty("--ry", `${(dx * max).toFixed(2)}deg`);
       active.style.setProperty("--rx", `${(-dy * max).toFixed(2)}deg`);
     }
 
-    cards.forEach(card => {
-      card.addEventListener("pointerenter", () => { active = card; });
+    cards.forEach((card) => {
+      card.addEventListener("pointerenter", () => {
+        active = card;
+      });
       card.addEventListener("pointermove", (e) => {
         lastX = e.clientX;
         lastY = e.clientY;
@@ -266,81 +445,21 @@ document.querySelectorAll(".section-hero .full-bg-video").forEach(v => {
   }
 
   /* =========================================================
-     AUTO-FIX SECTION VIDEOS (modshop/hazards)
-     Tries common filenames; if none work -> poster background.
-  ========================================================= */
-  function fallbackToImage(videoEl) {
-    const fallbackImg = videoEl.getAttribute("data-fallback-img") || videoEl.getAttribute("poster");
-    const parent = videoEl.parentElement;
-    videoEl.pause();
-    videoEl.style.display = "none";
-    if (parent && fallbackImg) {
-      parent.style.backgroundImage = `url("${fallbackImg}")`;
-      parent.style.backgroundSize = "cover";
-      parent.style.backgroundPosition = "center";
-    }
-  }
-
-  async function fixSectionVideo(sectionId, baseName) {
-    const section = document.getElementById(sectionId);
-    const videoEl = section?.querySelector("video");
-    if (!videoEl) return;
-
-    // Candidate files (add more if you rename files later)
-    const candidates = uniq([
-      `./assets/${baseName}.mp4`,
-      `./assets/${baseName}.webm`,
-      `./assets/${baseName}-bg.mp4`,
-      `./assets/${baseName}-bg.webm`,
-      `./assets/${baseName}cover.mp4`,
-      `./assets/${baseName}cover.webm`,
-      `./assets/${baseName}-cover.mp4`,
-      `./assets/${baseName}-cover.webm`,
-      `./assets/${sectionId}.mp4`,
-      `./assets/${sectionId}.webm`,
-    ]);
-
-    // Check by attempting to load first frame via fetch HEAD-like (Image trick won’t work for video).
-    // We'll "optimistically set sources" then detect if it errors quickly.
-    trySetVideoSources(videoEl, candidates);
-
-    let settled = false;
-    const onCanPlay = () => { settled = true; cleanup(); };
-    const onError = () => { settled = true; cleanup(); fallbackToImage(videoEl); };
-
-    const cleanup = () => {
-      videoEl.removeEventListener("canplay", onCanPlay);
-      videoEl.removeEventListener("error", onError);
-    };
-
-    videoEl.addEventListener("canplay", onCanPlay, { once: true });
-    videoEl.addEventListener("error", onError, { once: true });
-
-    // If nothing happens in 2s, assume fail and fallback
-    setTimeout(() => {
-      if (!settled) {
-        cleanup();
-        fallbackToImage(videoEl);
-      }
-    }, 2000);
-  }
-
-  fixSectionVideo("modshop", "modshop");
-  fixSectionVideo("hazards", "hazards");
-
-  /* =========================================================
      PURPLE BUBBLES FROM THE "O" (logo)
   ========================================================= */
+
   if (!prefersReduced) {
     const logo = $(".logo");
     const logoO = $(".logoO");
+
     if (logo && logoO) {
       const canvas = document.createElement("canvas");
       canvas.className = "logo-bubbles";
       logo.appendChild(canvas);
 
       const ctx = canvas.getContext("2d", { alpha: true });
-      let w = 0, h = 0;
+      let w = 0,
+        h = 0;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
       function resize() {
@@ -366,21 +485,24 @@ document.querySelectorAll(".section-hero .full-bg-video").forEach(v => {
 
         const o = logoO.getBoundingClientRect();
         const l = logo.getBoundingClientRect();
-        const x = (o.left - l.left) + o.width * 0.55;
-        const y = (o.top - l.top) + o.height * 0.72;
+
+        const x = o.left - l.left + o.width * 0.55;
+        const y = o.top - l.top + o.height * 0.72;
 
         bubbles.push({
-          x, y,
+          x,
+          y,
           r: Math.random() * 3 + 1.6,
           vx: (Math.random() - 0.5) * 0.45,
           vy: -1.15 - Math.random() * 0.9,
           life: 1,
-          hue: 275 + Math.random() * 25
+          hue: 275 + Math.random() * 25,
         });
       }
 
       function frame(t) {
         requestAnimationFrame(frame);
+
         // 30fps cap
         if (t - last < 33) return;
         last = t;
@@ -389,6 +511,7 @@ document.querySelectorAll(".section-hero .full-bg-video").forEach(v => {
         if (r.bottom < 0 || r.top > window.innerHeight) return;
 
         ctx.clearRect(0, 0, w, h);
+
         if (Math.random() < 0.45) emit();
 
         for (let i = bubbles.length - 1; i >= 0; i--) {
@@ -406,6 +529,7 @@ document.querySelectorAll(".section-hero .full-bg-video").forEach(v => {
           if (b.life <= 0) bubbles.splice(i, 1);
         }
       }
+
       requestAnimationFrame(frame);
     }
   }
@@ -413,10 +537,15 @@ document.querySelectorAll(".section-hero .full-bg-video").forEach(v => {
   /* =========================================================
      CURSOR GLOW TRACKING (cheap)
   ========================================================= */
+
   if (!prefersReduced) {
-    window.addEventListener("pointermove", (e) => {
-      document.documentElement.style.setProperty("--mx", e.clientX + "px");
-      document.documentElement.style.setProperty("--my", e.clientY + "px");
-    }, { passive: true });
+    window.addEventListener(
+      "pointermove",
+      (e) => {
+        document.documentElement.style.setProperty("--mx", e.clientX + "px");
+        document.documentElement.style.setProperty("--my", e.clientY + "px");
+      },
+      { passive: true }
+    );
   }
 });
